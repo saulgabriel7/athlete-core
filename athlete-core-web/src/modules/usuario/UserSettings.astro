@@ -1,0 +1,73 @@
+---
+/**
+ * ATHLETE CORE - User Settings
+ * Configurações do usuário
+ */
+
+import Card from '../../components/common/Card.astro';
+import Button from '../../components/common/Button.astro';
+import { UserProfile } from '@clerk/astro/components';
+---
+
+<div class="user-settings">
+  <Card class="settings-card">
+    <h2>Configurações da Conta</h2>
+    <p class="settings-description">
+      Gerencie suas informações de perfil, segurança e preferências.
+    </p>
+    
+    <div class="clerk-profile">
+      <UserProfile 
+        appearance={{
+          elements: {
+            rootBox: "clerk-profile-root",
+            card: "clerk-profile-card",
+            navbar: "clerk-profile-navbar",
+            pageScrollBox: "clerk-profile-scroll",
+          },
+          variables: {
+            colorPrimary: "#000000",
+            colorText: "#000000",
+            colorBackground: "#ffffff",
+            borderRadius: "0px",
+          }
+        }}
+      />
+    </div>
+  </Card>
+</div>
+
+<style>
+  .user-settings {
+    max-width: 900px;
+  }
+
+  .settings-card h2 {
+    font-size: var(--font-size-lg);
+    margin: 0 0 var(--spacing-xs) 0;
+  }
+
+  .settings-description {
+    color: var(--color-foreground-muted);
+    margin: 0 0 var(--spacing-xl) 0;
+  }
+
+  .clerk-profile {
+    border-top: var(--border-width) solid var(--color-border-light);
+    padding-top: var(--spacing-lg);
+  }
+
+  :global(.clerk-profile-root) {
+    width: 100%;
+  }
+
+  :global(.clerk-profile-card) {
+    border: none !important;
+    box-shadow: none !important;
+  }
+
+  :global(.clerk-profile-navbar) {
+    border-right: var(--border-width) solid var(--color-border-light) !important;
+  }
+</style>
+

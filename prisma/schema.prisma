@@ -1,0 +1,229 @@
+// ============================================================================
+// GYM PLAN MCP - Prisma Schema
+// ============================================================================
+// Este schema define todas as entidades para o sistema de gerenciamento de
+// treinos de academia, incluindo usuários, exercícios, planos de treino,
+// sessões de treino, refeições e planos alimentares.
+// ============================================================================
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ============================================================================
+// USUÁRIO
+// ============================================================================
+// Representa o perfil completo do usuário com informações físicas e objetivos
+// ============================================================================
+
+model User {
+  id                    String   @id @default(uuid())
+  nome                  String
+  idade                 Int
+  peso                  Float    // em kg
+  altura                Float    // em cm
+  objetivoFisico        String   // hipertrofia | emagrecimento | condicionamento | performance
+  restricoesAlimentares String?  // JSON array como string (ex: ["glúten", "lactose"])
+  nivelExperiencia      String   // iniciante | intermediario | avancado
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+
+  // Relacionamentos
+  workoutPlans    WorkoutPlan[]
+  workoutSessions WorkoutSession[]
+  mealPlans       MealPlan[]
+}
+
+// ============================================================================
+// EXERCÍCIO
+// ============================================================================
+// Catálogo de exercícios disponíveis no sistema
+// ============================================================================
+
+model Exercise {
+  id                  String  @id @default(uuid())
+  nome                String
+  grupoMuscular       String  // peito | costas | ombros | biceps | triceps | pernas | abdomen | cardio
+  equipamentoNecessario String? // barra | halteres | máquina | cabo | corpo livre
+  videoUrl            String?
+  instrucoesDetalhadas String
+  nivelRecomendado    String  // iniciante | intermediario | avancado
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+
+  // Relacionamentos
+  workoutPlanExercises WorkoutPlanExercise[]
+  sessionExercises     SessionExercise[]
+}
+
+// ============================================================================
+// PLANO DE TREINO (WORKOUT PLAN)
+// ============================================================================
+// Plano semanal de treinos do usuário com versionamento
+// ============================================================================
+
+model WorkoutPlan {
+  id          String   @id @default(uuid())
+  userId      String
+  nome        String
+  observacoes String?
+  versao      Int      @default(1)
+  ativo       Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relacionamentos
+  user      User                  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  exercises WorkoutPlanExercise[]
+
+  @@index([userId])
+}
+
+// ============================================================================
+// EXERCÍCIO NO PLANO DE TREINO
+// ============================================================================
+// Relaciona exercícios com dias da semana no plano de treino
+// ============================================================================
+
+model WorkoutPlanExercise {
+  id            String @id @default(uuid())
+  workoutPlanId String
+  exerciseId    String
+  diaSemana     Int    // 0=domingo, 1=segunda... 6=sábado
+  ordem         Int    // ordem do exercício no dia
+  series        Int    // número de séries recomendadas
+  repeticoes    String // ex: "8-12" ou "10"
+  descanso      Int    // tempo de descanso em segundos
+  observacoes   String?
+
+  // Relacionamentos
+  workoutPlan WorkoutPlan @relation(fields: [workoutPlanId], references: [id], onDelete: Cascade)
+  exercise    Exercise    @relation(fields: [exerciseId], references: [id], onDelete: Cascade)
+
+  @@index([workoutPlanId])
+  @@index([exerciseId])
+}
+
+// ============================================================================
+// SESSÃO DE TREINO (WORKOUT SESSION)
+// ============================================================================
+// Registro de um treino realizado pelo usuário
+// ============================================================================
+
+model WorkoutSession {
+  id               String   @id @default(uuid())
+  userId           String
+  data             DateTime
+  duracao          Int?     // duração em minutos
+  comentarios      String?
+  performanceScore Float?   // 0-100, calculado automaticamente
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  // Relacionamentos
+  user      User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  exercises SessionExercise[]
+
+  @@index([userId])
+  @@index([data])
+}
+
+// ============================================================================
+// EXERCÍCIO NA SESSÃO
+// ============================================================================
+// Registro detalhado de cada exercício executado na sessão
+// ============================================================================
+
+model SessionExercise {
+  id               String @id @default(uuid())
+  workoutSessionId String
+  exerciseId       String
+  seriesExecutadas Int
+  repeticoes       String // JSON array: ex: "[12, 10, 8]"
+  carga            String // JSON array: ex: "[20, 25, 30]" em kg
+  observacoes      String?
+
+  // Relacionamentos
+  workoutSession WorkoutSession @relation(fields: [workoutSessionId], references: [id], onDelete: Cascade)
+  exercise       Exercise       @relation(fields: [exerciseId], references: [id], onDelete: Cascade)
+
+  @@index([workoutSessionId])
+  @@index([exerciseId])
+}
+
+// ============================================================================
+// REFEIÇÃO (MEAL)
+// ============================================================================
+// Catálogo de refeições com informações nutricionais
+// ============================================================================
+
+model Meal {
+  id          String  @id @default(uuid())
+  nome        String
+  ingredientes String // JSON array: ex: ["100g frango", "50g arroz"]
+  proteina    Float   // em gramas
+  carboidrato Float   // em gramas
+  gordura     Float   // em gramas
+  calorias    Float   // kcal
+  tags        String? // JSON array: ex: ["vegano", "lowcarb", "sem glúten"]
+  preparo     String? // instruções de preparo
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relacionamentos
+  mealPlanMeals MealPlanMeal[]
+}
+
+// ============================================================================
+// PLANO ALIMENTAR (MEAL PLAN)
+// ============================================================================
+// Plano semanal de alimentação do usuário
+// ============================================================================
+
+model MealPlan {
+  id           String   @id @default(uuid())
+  userId       String
+  nome         String
+  metaCalorica Float    // kcal por dia
+  metaProteina Float    // gramas por dia
+  metaCarbo    Float    // gramas por dia
+  metaGordura  Float    // gramas por dia
+  observacoes  String?
+  ativo        Boolean  @default(true)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  // Relacionamentos
+  user  User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  meals MealPlanMeal[]
+
+  @@index([userId])
+}
+
+// ============================================================================
+// REFEIÇÃO NO PLANO ALIMENTAR
+// ============================================================================
+// Relaciona refeições com dias e horários no plano alimentar
+// ============================================================================
+
+model MealPlanMeal {
+  id         String @id @default(uuid())
+  mealPlanId String
+  mealId     String
+  diaSemana  Int    // 0=domingo, 1=segunda... 6=sábado
+  tipoRefeicao String // cafe | almoco | jantar | lanche_manha | lanche_tarde | ceia
+  ordem      Int    // ordem dentro do tipo de refeição
+
+  // Relacionamentos
+  mealPlan MealPlan @relation(fields: [mealPlanId], references: [id], onDelete: Cascade)
+  meal     Meal     @relation(fields: [mealId], references: [id], onDelete: Cascade)
+
+  @@index([mealPlanId])
+  @@index([mealId])
+}
+

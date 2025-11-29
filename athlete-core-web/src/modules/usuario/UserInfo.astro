@@ -1,0 +1,317 @@
+---
+/**
+ * ATHLETE CORE - User Info
+ * Informações do perfil do usuário
+ */
+
+import Card from '../../components/common/Card.astro';
+import UserAvatar from '../../components/layout/UserAvatar.astro';
+import { formatWeight, formatHeight, formatIMC, formatCalories, formatMacro } from '../../utils/formatters';
+import type { User } from '../../types/user';
+import type { ClerkUser } from '../../types/user';
+
+interface Props {
+  user?: User;
+  clerkUser?: ClerkUser;
+}
+
+const { user, clerkUser } = Astro.props;
+
+const imcInfo = user?.imc ? formatIMC(user.imc) : null;
+---
+
+<div class="user-info">
+  <Card class="profile-card">
+    <div class="profile-header">
+      <UserAvatar 
+        src={clerkUser?.imageUrl} 
+        name={clerkUser?.fullName || user?.nome} 
+        size="xl" 
+      />
+      <div class="profile-details">
+        <h1>{clerkUser?.fullName || user?.nome || 'Usuário'}</h1>
+        {clerkUser?.emailAddresses[0] && (
+          <p class="email">{clerkUser.emailAddresses[0].emailAddress}</p>
+        )}
+      </div>
+    </div>
+  </Card>
+
+  {user && (
+    <>
+      <Card class="stats-card">
+        <h2>Dados Físicos</h2>
+        <div class="stats-grid">
+          <div class="stat-item">
+            <span class="stat-value">{formatWeight(user.peso)}</span>
+            <span class="stat-label">Peso</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-value">{formatHeight(user.altura)}</span>
+            <span class="stat-label">Altura</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-value">{user.idade}</span>
+            <span class="stat-label">Anos</span>
+          </div>
+          {imcInfo && (
+            <div class="stat-item">
+              <span class="stat-value">{imcInfo.value}</span>
+              <span class="stat-label">IMC</span>
+              <span class="stat-sub">{imcInfo.classification}</span>
+            </div>
+          )}
+        </div>
+      </Card>
+
+      <Card class="goals-card">
+        <h2>Objetivos & Preferências</h2>
+        <div class="goals-list">
+          <div class="goal-item">
+            <span class="goal-label">Objetivo Físico</span>
+            <span class="goal-value tag tag-filled">{user.objetivoFisico}</span>
+          </div>
+          <div class="goal-item">
+            <span class="goal-label">Nível de Experiência</span>
+            <span class="goal-value tag">{user.nivelExperiencia}</span>
+          </div>
+          {user.restricoesAlimentares && user.restricoesAlimentares.length > 0 && (
+            <div class="goal-item">
+              <span class="goal-label">Restrições Alimentares</span>
+              <div class="goal-tags">
+                {user.restricoesAlimentares.map((r) => (
+                  <span class="tag">{r}</span>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
+      </Card>
+
+      {user.planoNutricional && (
+        <Card class="nutrition-card">
+          <h2>Plano Nutricional Recomendado</h2>
+          <div class="nutrition-grid">
+            <div class="nutrition-item">
+              <span class="nutrition-value">{user.planoNutricional.tmb}</span>
+              <span class="nutrition-label">TMB (kcal)</span>
+            </div>
+            <div class="nutrition-item">
+              <span class="nutrition-value">{user.planoNutricional.tdee}</span>
+              <span class="nutrition-label">TDEE (kcal)</span>
+            </div>
+            <div class="nutrition-item highlight">
+              <span class="nutrition-value">{formatCalories(user.planoNutricional.metaCalorica)}</span>
+              <span class="nutrition-label">Meta Diária</span>
+            </div>
+          </div>
+          
+          <div class="macros-section">
+            <h3>Macros Recomendados</h3>
+            <div class="macros-grid">
+              <div class="macro-item">
+                <span class="macro-value">{user.planoNutricional.macros.proteina}g</span>
+                <span class="macro-label">Proteína</span>
+              </div>
+              <div class="macro-item">
+                <span class="macro-value">{user.planoNutricional.macros.carboidrato}g</span>
+                <span class="macro-label">Carboidrato</span>
+              </div>
+              <div class="macro-item">
+                <span class="macro-value">{user.planoNutricional.macros.gordura}g</span>
+                <span class="macro-label">Gordura</span>
+              </div>
+            </div>
+          </div>
+
+          {user.aguaDiaria && (
+            <p class="water-tip">
+              💧 Recomendação de água: <strong>{user.aguaDiaria}L</strong> por dia
+            </p>
+          )}
+        </Card>
+      )}
+    </>
+  )}
+</div>
+
+<style>
+  .user-info {
+    max-width: 800px;
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-lg);
+  }
+
+  .profile-card {
+    background: var(--color-white);
+  }
+
+  .profile-header {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-lg);
+  }
+
+  .profile-details h1 {
+    font-size: var(--font-size-2xl);
+    margin: 0 0 var(--spacing-xs) 0;
+  }
+
+  .email {
+    color: var(--color-foreground-muted);
+    margin: 0;
+  }
+
+  .stats-card h2,
+  .goals-card h2,
+  .nutrition-card h2 {
+    font-size: var(--font-size-lg);
+    margin: 0 0 var(--spacing-md) 0;
+    padding-bottom: var(--spacing-sm);
+    border-bottom: var(--border-width) solid var(--color-border-light);
+  }
+
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: var(--spacing-md);
+    text-align: center;
+  }
+
+  .stat-item {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .stat-value {
+    font-size: var(--font-size-xl);
+    font-weight: var(--font-weight-bold);
+  }
+
+  .stat-label {
+    font-size: var(--font-size-xs);
+    color: var(--color-foreground-muted);
+    text-transform: uppercase;
+  }
+
+  .stat-sub {
+    font-size: var(--font-size-xs);
+    color: var(--color-foreground-muted);
+  }
+
+  .goals-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-md);
+  }
+
+  .goal-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: var(--spacing-sm) 0;
+    border-bottom: var(--border-width) solid var(--color-border-light);
+  }
+
+  .goal-item:last-child {
+    border-bottom: none;
+  }
+
+  .goal-label {
+    color: var(--color-foreground-muted);
+    font-size: var(--font-size-sm);
+  }
+
+  .goal-tags {
+    display: flex;
+    gap: var(--spacing-xs);
+  }
+
+  .nutrition-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--spacing-md);
+    text-align: center;
+    margin-bottom: var(--spacing-lg);
+  }
+
+  .nutrition-item {
+    padding: var(--spacing-md);
+  }
+
+  .nutrition-item.highlight {
+    background: var(--color-black);
+    color: var(--color-white);
+  }
+
+  .nutrition-value {
+    display: block;
+    font-size: var(--font-size-xl);
+    font-weight: var(--font-weight-bold);
+    margin-bottom: var(--spacing-xs);
+  }
+
+  .nutrition-label {
+    font-size: var(--font-size-xs);
+    text-transform: uppercase;
+  }
+
+  .nutrition-item.highlight .nutrition-label {
+    color: var(--color-gray-medium);
+  }
+
+  .macros-section {
+    padding-top: var(--spacing-md);
+    border-top: var(--border-width) solid var(--color-border-light);
+  }
+
+  .macros-section h3 {
+    font-size: var(--font-size-base);
+    margin: 0 0 var(--spacing-md) 0;
+  }
+
+  .macros-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--spacing-md);
+    text-align: center;
+  }
+
+  .macro-item {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .macro-value {
+    font-size: var(--font-size-lg);
+    font-weight: var(--font-weight-semibold);
+  }
+
+  .macro-label {
+    font-size: var(--font-size-xs);
+    color: var(--color-foreground-muted);
+    text-transform: uppercase;
+  }
+
+  .water-tip {
+    margin: var(--spacing-lg) 0 0 0;
+    padding: var(--spacing-md);
+    background: var(--color-gray-light);
+    font-size: var(--font-size-sm);
+  }
+
+  @media (max-width: 768px) {
+    .stats-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+
+    .profile-header {
+      flex-direction: column;
+      text-align: center;
+    }
+  }
+</style>
+

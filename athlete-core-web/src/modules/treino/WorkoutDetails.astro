@@ -1,0 +1,281 @@
+---
+/**
+ * ATHLETE CORE - Workout Details
+ * Detalhes de um plano de treino
+ */
+
+import Card from '../../components/common/Card.astro';
+import SectionTitle from '../../components/common/SectionTitle.astro';
+import { formatDiaSemana, formatRestTime } from '../../utils/formatters';
+import type { WorkoutPlan } from '../../types/workout';
+
+interface Props {
+  workout: WorkoutPlan;
+  userId?: string;
+}
+
+const { workout, userId } = Astro.props;
+
+// Agrupa exercícios por dia da semana
+const exerciciosPorDia = workout.exercises.reduce((acc, ex) => {
+  if (!acc[ex.diaSemana]) {
+    acc[ex.diaSemana] = [];
+  }
+  acc[ex.diaSemana].push(ex);
+  return acc;
+}, {} as Record<number, typeof workout.exercises>);
+
+const diasOrdenados = Object.keys(exerciciosPorDia)
+  .map(Number)
+  .sort((a, b) => a - b);
+---
+
+<div class="workout-details">
+  <header class="workout-header">
+    <div class="header-info">
+      <h1>{workout.nome}</h1>
+      {workout.ativo && <span class="tag tag-filled">Ativo</span>}
+    </div>
+    
+    <div class="header-meta">
+      <span><strong>{workout.resumo?.totalExercicios || 0}</strong> exercícios</span>
+      <span><strong>{diasOrdenados.length}</strong> dias de treino</span>
+      <span>Versão <strong>{workout.versao}</strong></span>
+    </div>
+
+    {workout.observacoes && (
+      <p class="workout-obs">{workout.observacoes}</p>
+    )}
+  </header>
+
+  <div class="workout-days">
+    {diasOrdenados.map((dia) => (
+      <div class="workout-day">
+        <div class="day-header">
+          <h2 class="day-title">{formatDiaSemana(dia)}</h2>
+          {userId && (
+            <button 
+              class="btn-register" 
+              data-day={dia}
+              data-exercises={JSON.stringify(exerciciosPorDia[dia].map(ex => ({
+                exerciseId: ex.exerciseId,
+                seriesExecutadas: ex.series,
+                repeticoes: Array(ex.series).fill(Number(ex.repeticoes.split('-')[0]) || 10),
+                carga: Array(ex.series).fill(0) // Carga padrão 0, idealmente input do usuário
+              })))}
+            >
+              Concluir Treino
+            </button>
+          )}
+        </div>
+        
+        <div class="exercises-list">
+          {exerciciosPorDia[dia]
+            .sort((a, b) => a.ordem - b.ordem)
+            .map((ex, index) => (
+              <Card class="exercise-item">
+                <div class="exercise-number">{index + 1}</div>
+                <div class="exercise-content">
+                  <h3 class="exercise-name">
+                    {ex.exercise?.nome || 'Exercício'}
+                  </h3>
+                  <div class="exercise-meta">
+                    <span>{ex.series} séries</span>
+                    <span>{ex.repeticoes} reps</span>
+                    <span>{formatRestTime(ex.descanso)} descanso</span>
+                  </div>
+                  {ex.exercise?.grupoMuscular && (
+                    <span class="tag">{ex.exercise.grupoMuscular}</span>
+                  )}
+                  {ex.observacoes && (
+                    <p class="exercise-obs">{ex.observacoes}</p>
+                  )}
+                </div>
+              </Card>
+            ))}
+        </div>
+      </div>
+    ))}
+  </div>
+</div>
+
+<script define:vars={{ userId }}>
+  const buttons = document.querySelectorAll('.btn-register');
+
+  buttons.forEach(btn => {
+    btn.addEventListener('click', async () => {
+      if (!userId) return;
+      
+      if (!confirm('Confirmar que realizou este treino hoje?')) return;
+      
+      const btnEl = btn;
+      const originalText = btnEl.textContent;
+      btnEl.disabled = true;
+      btnEl.textContent = 'Registrando...';
+
+      try {
+        const exercises = JSON.parse(btnEl.dataset.exercises);
+        
+        const payload = {
+          userId,
+          data: new Date().toISOString(),
+          exercises
+        };
+
+        const res = await fetch('/api/workout/session', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+
+        const data = await res.json();
+
+        if (data.success) {
+          alert('Treino registrado com sucesso!');
+        } else {
+          alert('Erro ao registrar: ' + (data.error || 'Desconhecido'));
+        }
+      } catch (e) {
+        console.error(e);
+        alert('Erro de conexão');
+      } finally {
+        btnEl.disabled = false;
+        btnEl.textContent = originalText;
+      }
+    });
+  });
+</script>
+
+<style>
+  .workout-details {
+    max-width: 900px;
+  }
+
+  .workout-header {
+    margin-bottom: var(--spacing-2xl);
+    padding-bottom: var(--spacing-xl);
+    border-bottom: var(--border-width) solid var(--color-border);
+  }
+
+  .header-info {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-md);
+    margin-bottom: var(--spacing-md);
+  }
+
+  .header-info h1 {
+    font-size: var(--font-size-3xl);
+    margin: 0;
+  }
+
+  .header-meta {
+    display: flex;
+    gap: var(--spacing-lg);
+    color: var(--color-foreground-muted);
+    font-size: var(--font-size-sm);
+  }
+
+  .header-meta strong {
+    color: var(--color-foreground);
+  }
+
+  .workout-obs {
+    margin-top: var(--spacing-md);
+    color: var(--color-foreground-muted);
+    margin-bottom: 0;
+  }
+
+  .workout-days {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-2xl);
+  }
+
+  .day-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--spacing-lg);
+    border-bottom: var(--border-width) solid var(--color-border);
+    padding-bottom: var(--spacing-sm);
+  }
+
+  .day-title {
+    font-size: var(--font-size-xl);
+    font-weight: var(--font-weight-semibold);
+    margin: 0;
+    border: none;
+    padding: 0;
+  }
+
+  .btn-register {
+    background: var(--color-foreground);
+    color: var(--color-background);
+    border: none;
+    padding: var(--spacing-xs) var(--spacing-md);
+    font-size: var(--font-size-sm);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    cursor: pointer;
+  }
+
+  .btn-register:hover {
+    opacity: 0.9;
+  }
+
+  .btn-register:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  .exercises-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-md);
+  }
+
+  .exercise-item {
+    display: flex;
+    gap: var(--spacing-lg);
+    align-items: flex-start;
+  }
+
+  .exercise-number {
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-bold);
+    border: var(--border-width) solid var(--color-border);
+    flex-shrink: 0;
+  }
+
+  .exercise-content {
+    flex: 1;
+  }
+
+  .exercise-name {
+    font-size: var(--font-size-lg);
+    font-weight: var(--font-weight-semibold);
+    margin: 0 0 var(--spacing-xs) 0;
+  }
+
+  .exercise-meta {
+    display: flex;
+    gap: var(--spacing-md);
+    color: var(--color-foreground-muted);
+    font-size: var(--font-size-sm);
+    margin-bottom: var(--spacing-sm);
+  }
+
+  .exercise-obs {
+    font-size: var(--font-size-sm);
+    color: var(--color-foreground-muted);
+    margin: var(--spacing-sm) 0 0 0;
+    font-style: italic;
+  }
+</style>
+

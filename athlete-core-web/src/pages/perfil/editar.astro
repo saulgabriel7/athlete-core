@@ -1,0 +1,167 @@
+---
+import DashboardLayout from '../../layouts/DashboardLayout.astro';
+import { getUser } from '../../services/mcpClient';
+import { getUserId } from '../../services/clerkServer';
+import SectionTitle from '../../components/common/SectionTitle.astro';
+import Button from '../../components/common/Button.astro';
+
+const userId = getUserId(Astro.locals);
+let user = null;
+
+if (userId) {
+  const response = await getUser(userId);
+  if (response.success) {
+    user = response.data;
+  }
+}
+
+// Se não tiver usuário (primeiro acesso), usamos defaults vazios
+const initialData = user || {
+  nome: '',
+  idade: '',
+  peso: '',
+  altura: '',
+  objetivoFisico: 'hipertrofia',
+  nivelExperiencia: 'iniciante'
+};
+---
+
+<DashboardLayout title="Editar Perfil" pageTitle="Editar Dados">
+  <div class="edit-container">
+    <SectionTitle title="Seus Dados Físicos" />
+    
+    <form id="profile-form" class="form-grid">
+      <input type="hidden" name="id" value={userId} />
+      
+      <div class="form-group">
+        <label for="nome">Nome</label>
+        <input type="text" id="nome" name="nome" value={initialData.nome} required />
+      </div>
+
+      <div class="form-group">
+        <label for="idade">Idade (anos)</label>
+        <input type="number" id="idade" name="idade" value={initialData.idade} required />
+      </div>
+
+      <div class="form-group">
+        <label for="peso">Peso (kg)</label>
+        <input type="number" id="peso" name="peso" step="0.1" value={initialData.peso} required />
+      </div>
+
+      <div class="form-group">
+        <label for="altura">Altura (cm)</label>
+        <input type="number" id="altura" name="altura" value={initialData.altura} required />
+      </div>
+
+      <div class="form-group">
+        <label for="objetivoFisico">Objetivo</label>
+        <select id="objetivoFisico" name="objetivoFisico" required>
+          <option value="hipertrofia" selected={initialData.objetivoFisico === 'hipertrofia'}>Hipertrofia</option>
+          <option value="emagrecimento" selected={initialData.objetivoFisico === 'emagrecimento'}>Emagrecimento</option>
+          <option value="condicionamento" selected={initialData.objetivoFisico === 'condicionamento'}>Condicionamento</option>
+          <option value="performance" selected={initialData.objetivoFisico === 'performance'}>Performance</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label for="nivelExperiencia">Nível de Experiência</label>
+        <select id="nivelExperiencia" name="nivelExperiencia" required>
+          <option value="iniciante" selected={initialData.nivelExperiencia === 'iniciante'}>Iniciante</option>
+          <option value="intermediario" selected={initialData.nivelExperiencia === 'intermediario'}>Intermediário</option>
+          <option value="avancado" selected={initialData.nivelExperiencia === 'avancado'}>Avançado</option>
+        </select>
+      </div>
+
+      <div class="form-actions">
+        <Button type="submit" variant="primary">Salvar Alterações</Button>
+        <Button href="/perfil" variant="outline">Cancelar</Button>
+      </div>
+    </form>
+  </div>
+</DashboardLayout>
+
+<script>
+  const form = document.getElementById('profile-form');
+  
+  form?.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const formData = new FormData(e.target as HTMLFormElement);
+    const data = Object.fromEntries(formData);
+    
+    // Converter números
+    const payload = {
+      ...data,
+      idade: Number(data.idade),
+      peso: Number(data.peso),
+      altura: Number(data.altura)
+    };
+
+    try {
+      const res = await fetch('/api/user', {
+        method: 'POST',
+        body: JSON.stringify(payload),
+        headers: { 'Content-Type': 'application/json' }
+      });
+
+      if (res.ok) {
+        window.location.href = '/perfil';
+      } else {
+        alert('Erro ao salvar perfil');
+      }
+    } catch (error) {
+      console.error(error);
+      alert('Erro de conexão');
+    }
+  });
+</script>
+
+<style>
+  .edit-container {
+    max-width: 600px;
+    margin-top: var(--spacing-lg);
+  }
+
+  .form-grid {
+    display: grid;
+    gap: var(--spacing-md);
+    background: white;
+    padding: var(--spacing-lg);
+    border: var(--border-width) solid var(--color-border);
+  }
+
+  .form-group {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-xs);
+  }
+
+  label {
+    font-size: var(--font-size-sm);
+    font-weight: 500;
+    color: var(--color-foreground-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  input, select {
+    padding: var(--spacing-sm);
+    border: var(--border-width) solid var(--color-border);
+    font-family: inherit;
+    font-size: var(--font-size-base);
+    background: var(--color-background);
+    color: var(--color-foreground);
+    border-radius: 0;
+  }
+
+  input:focus, select:focus {
+    outline: none;
+    border-color: var(--color-foreground);
+  }
+
+  .form-actions {
+    display: flex;
+    gap: var(--spacing-md);
+    margin-top: var(--spacing-md);
+  }
+</style>
+

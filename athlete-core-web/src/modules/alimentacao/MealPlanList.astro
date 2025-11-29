@@ -1,0 +1,271 @@
+---
+/**
+ * ATHLETE CORE - Meal Plan List
+ * Lista de planos alimentares com refeições por dia
+ */
+
+import Card from '../../components/common/Card.astro';
+import SectionTitle from '../../components/common/SectionTitle.astro';
+import { formatCalories, formatMacro, formatDiaSemana } from '../../utils/formatters';
+import type { MealPlan } from '../../types/meal';
+
+interface Props {
+  mealPlan?: MealPlan;
+  title?: string;
+  subtitle?: string;
+}
+
+const { 
+  mealPlan,
+  title = 'Plano Alimentar',
+  subtitle = 'Seu plano alimentar semanal'
+} = Astro.props;
+
+// Agrupa refeições por dia da semana
+const refeicoesPorDia = mealPlan?.meals.reduce((acc, m) => {
+  if (!acc[m.diaSemana]) {
+    acc[m.diaSemana] = [];
+  }
+  acc[m.diaSemana].push(m);
+  return acc;
+}, {} as Record<number, typeof mealPlan.meals>) || {};
+
+const diasOrdenados = Object.keys(refeicoesPorDia)
+  .map(Number)
+  .sort((a, b) => a - b);
+---
+
+<section class="meal-plan-list">
+  <div class="header">
+    <SectionTitle title={title} subtitle={subtitle} />
+    <slot name="actions" />
+  </div>
+  
+  {mealPlan ? (
+    <div class="meal-plan">
+      <Card class="plan-summary">
+        <h3>Metas Diárias</h3>
+        <div class="macros-grid">
+          <div class="macro-item">
+            <span class="macro-value">{formatCalories(mealPlan.metaCalorica)}</span>
+            <span class="macro-label">Calorias</span>
+          </div>
+          <div class="macro-item">
+            <span class="macro-value">{formatMacro(mealPlan.metaProteina)}</span>
+            <span class="macro-label">Proteína</span>
+          </div>
+          <div class="macro-item">
+            <span class="macro-value">{formatMacro(mealPlan.metaCarbo)}</span>
+            <span class="macro-label">Carboidrato</span>
+          </div>
+          <div class="macro-item">
+            <span class="macro-value">{formatMacro(mealPlan.metaGordura)}</span>
+            <span class="macro-label">Gordura</span>
+          </div>
+        </div>
+        
+        {mealPlan.resumo && (
+          <div class="progress-info">
+            <p>
+              Atingimento médio: <strong>{mealPlan.resumo.atingimentoMetas.calorias}%</strong> das calorias
+            </p>
+          </div>
+        )}
+      </Card>
+
+      <div class="days-grid">
+        {diasOrdenados.map((dia) => (
+          <Card class="day-card">
+            <h4 class="day-title">{formatDiaSemana(dia, true)}</h4>
+            <div class="day-meals">
+              {refeicoesPorDia[dia]
+                .sort((a, b) => a.ordem - b.ordem)
+                .map((m) => (
+                  <a href={`/alimentacao/${m.meal?.id || m.mealId}`} class="meal-item">
+                    <span class="meal-type">{m.tipoRefeicaoLabel}</span>
+                    <span class="meal-name">{m.meal?.nome || 'Refeição'}</span>
+                    {m.meal && (
+                      <span class="meal-cals">{m.meal.calorias} kcal</span>
+                    )}
+                  </a>
+                ))}
+            </div>
+          </Card>
+        ))}
+      </div>
+    </div>
+  ) : (
+    <div class="empty-state">
+      <div class="empty-state-icon">🥗</div>
+      <p class="empty-state-title">Nenhum plano alimentar encontrado</p>
+      <p>Crie seu primeiro plano alimentar para começar!</p>
+    </div>
+  )}
+</section>
+
+<style>
+  .meal-plan-list {
+    margin-bottom: var(--spacing-2xl);
+  }
+
+  .header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: var(--spacing-lg);
+  }
+
+  .plan-summary {
+    margin-bottom: var(--spacing-xl);
+    background: var(--color-background);
+  }
+
+  .plan-summary h3 {
+    font-size: var(--font-size-lg);
+    margin: 0 0 var(--spacing-md) 0;
+    font-weight: 600;
+  }
+
+  .macros-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: var(--spacing-md);
+    margin-bottom: var(--spacing-md);
+  }
+
+  .macro-item {
+    text-align: center;
+  }
+
+  .macro-value {
+    display: block;
+    font-size: var(--font-size-xl);
+    font-weight: var(--font-weight-bold);
+    letter-spacing: -0.02em;
+  }
+
+  .macro-label {
+    font-size: var(--font-size-xs);
+    color: var(--color-foreground-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-top: 4px;
+  }
+
+  .progress-info {
+    padding-top: var(--spacing-md);
+    border-top: 1px solid var(--color-border);
+  }
+
+  .progress-info p {
+    margin: 0;
+    font-size: var(--font-size-sm);
+    color: var(--color-foreground-muted);
+  }
+
+  .days-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: var(--spacing-lg);
+  }
+
+  .day-card {
+    background: var(--color-background);
+    transition: border-color var(--transition-fast);
+  }
+  
+  .day-card:hover {
+    border-color: var(--color-foreground-muted);
+  }
+
+  .day-title {
+    font-size: var(--font-size-base);
+    font-weight: 600;
+    margin: 0 0 var(--spacing-md) 0;
+    padding-bottom: var(--spacing-sm);
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  .day-meals {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-xs);
+  }
+
+  .meal-item {
+    display: block;
+    padding: var(--spacing-sm);
+    text-decoration: none;
+    color: inherit;
+    transition: all var(--transition-fast);
+    border-radius: var(--radius-md);
+    border: 1px solid transparent;
+  }
+
+  .meal-item:hover {
+    background: var(--color-background-subtle);
+    border-color: var(--color-border);
+  }
+
+  .meal-type {
+    display: block;
+    font-size: var(--font-size-xs);
+    color: var(--color-foreground-muted);
+    text-transform: uppercase;
+    margin-bottom: 2px;
+    font-weight: 500;
+  }
+
+  .meal-name {
+    display: block;
+    font-size: var(--font-size-sm);
+    font-weight: 500;
+  }
+
+  .meal-cals {
+    display: block;
+    font-size: var(--font-size-xs);
+    color: var(--color-foreground-muted);
+    margin-top: 2px;
+  }
+
+  .empty-state {
+    text-align: center;
+    padding: var(--spacing-3xl);
+    background: var(--color-background);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+  }
+
+  .empty-state-icon {
+    font-size: var(--font-size-4xl);
+    margin-bottom: var(--spacing-md);
+  }
+
+  .empty-state-title {
+    font-size: var(--font-size-lg);
+    font-weight: 600;
+    margin-bottom: var(--spacing-sm);
+  }
+
+  .empty-state p:last-child {
+    color: var(--color-foreground-muted);
+    margin: 0;
+  }
+
+  @media (max-width: 768px) {
+    .header {
+      flex-direction: column;
+      gap: var(--spacing-md);
+      align-items: stretch;
+    }
+
+    .days-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .macros-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+</style>

@@ -1,0 +1,112 @@
+---
+/**
+ * ATHLETE CORE - Dashboard Page
+ * Página principal do dashboard
+ */
+
+import DashboardLayout from '../../layouts/DashboardLayout.astro';
+import DashboardHero from '../../modules/dashboard/DashboardHero.astro';
+import Card from '../../components/common/Card.astro';
+import Button from '../../components/common/Button.astro';
+import { getCurrentUser, getUserId } from '../../services/clerkServer';
+import { getUserStats } from '../../services/mcpClient';
+
+// Obtém dados do usuário
+const clerkUser = await getCurrentUser(Astro.locals);
+const userId = getUserId(Astro.locals);
+
+// Tenta obter stats do MCP (pode falhar se usuário não existir no MCP)
+let stats = null;
+if (userId) {
+  try {
+    const response = await getUserStats(userId);
+    if (response.success) {
+      stats = response.data;
+    }
+  } catch (e) {
+    // Silently fail
+  }
+}
+---
+
+<DashboardLayout title="Dashboard" pageTitle="Dashboard">
+  <DashboardHero 
+    userName={clerkUser?.firstName || clerkUser?.fullName} 
+    stats={stats ? {
+      totalTreinos: stats.totalTreinos,
+      mediaPerformance: stats.mediaPerformance,
+      diasConsecutivos: stats.diasConsecutivos,
+    } : undefined}
+  />
+
+  <section class="quick-actions">
+    <h2 class="section-title">Acesso Rápido</h2>
+    
+    <div class="actions-grid">
+      <Card href="/treino" clickable class="action-card">
+        <div class="action-icon">💪</div>
+        <h3>Treinos</h3>
+        <p>Veja seus planos de treino e histórico de sessões</p>
+      </Card>
+
+      <Card href="/alimentacao" clickable class="action-card">
+        <div class="action-icon">🥗</div>
+        <h3>Alimentação</h3>
+        <p>Seu plano alimentar semanal com macros</p>
+      </Card>
+
+      <Card href="/perfil" clickable class="action-card">
+        <div class="action-icon">👤</div>
+        <h3>Perfil</h3>
+        <p>Suas informações e configurações</p>
+      </Card>
+    </div>
+  </section>
+</DashboardLayout>
+
+<style>
+  .quick-actions {
+    margin-top: var(--spacing-2xl);
+  }
+
+  .section-title {
+    font-size: var(--font-size-xl);
+    font-weight: var(--font-weight-semibold);
+    margin-bottom: var(--spacing-lg);
+  }
+
+  .actions-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--spacing-lg);
+  }
+
+  .action-card {
+    text-align: center;
+    padding: var(--spacing-xl);
+    background: var(--color-white);
+  }
+
+  .action-icon {
+    font-size: var(--font-size-4xl);
+    margin-bottom: var(--spacing-md);
+  }
+
+  .action-card h3 {
+    font-size: var(--font-size-lg);
+    margin: 0 0 var(--spacing-sm) 0;
+  }
+
+  .action-card p {
+    font-size: var(--font-size-sm);
+    color: var(--color-foreground-muted);
+    margin: 0;
+  }
+
+  @media (max-width: 768px) {
+    .actions-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>
+

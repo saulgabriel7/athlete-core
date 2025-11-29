@@ -1,0 +1,44 @@
+---
+/**
+ * ATHLETE CORE - Footer Component
+ * Rodapé minimalista
+ */
+
+const year = new Date().getFullYear();
+---
+
+<footer class="footer">
+  <div class="footer-content">
+    <p class="footer-text">
+      &copy; {year} <span class="logo">ATHLETE<span>CORE</span></span>
+    </p>
+  </div>
+</footer>
+
+<style>
+  .footer {
+    padding: var(--spacing-lg);
+    border-top: var(--border-width) solid var(--color-border);
+    background: var(--color-background);
+  }
+
+  .footer-content {
+    text-align: center;
+  }
+
+  .footer-text {
+    font-size: var(--font-size-sm);
+    color: var(--color-foreground-muted);
+    margin: 0;
+  }
+
+  .logo {
+    font-weight: var(--font-weight-bold);
+    color: var(--color-foreground);
+  }
+
+  .logo span {
+    font-weight: var(--font-weight-light);
+  }
+</style>
+

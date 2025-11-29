@@ -1,0 +1,44 @@
+---
+/**
+ * ATHLETE CORE - Section Title Component
+ * Título de seção com subtítulo opcional
+ */
+
+interface Props {
+  title: string;
+  subtitle?: string;
+  class?: string;
+}
+
+const {
+  title,
+  subtitle,
+  class: className = '',
+} = Astro.props;
+---
+
+<div class={`section-title ${className}`}>
+  <h2>{title}</h2>
+  {subtitle && <p>{subtitle}</p>}
+</div>
+
+<style>
+  .section-title {
+    margin-bottom: var(--spacing-lg);
+  }
+
+  .section-title h2 {
+    font-size: var(--font-size-xl);
+    font-weight: 600;
+    letter-spacing: -0.02em;
+    color: var(--color-foreground);
+    margin: 0 0 4px 0;
+  }
+
+  .section-title p {
+    font-size: var(--font-size-sm);
+    color: var(--color-foreground-muted);
+    margin: 0;
+    line-height: 1.5;
+  }
+</style>

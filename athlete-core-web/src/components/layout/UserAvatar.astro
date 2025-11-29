@@ -1,0 +1,46 @@
+---
+/**
+ * ATHLETE CORE - User Avatar Component
+ * Avatar do usuário com imagem do Clerk
+ */
+
+import { getInitials } from '../../utils/formatters';
+
+interface Props {
+  src?: string | null;
+  name?: string | null;
+  size?: 'sm' | 'md' | 'lg' | 'xl';
+  class?: string;
+}
+
+const {
+  src,
+  name,
+  size = 'md',
+  class: className = '',
+} = Astro.props;
+
+const sizeClasses: Record<string, string> = {
+  sm: '',
+  md: '',
+  lg: 'avatar-lg',
+  xl: 'avatar-xl',
+};
+
+const classes = [
+  'avatar',
+  sizeClasses[size],
+  className,
+].filter(Boolean).join(' ');
+
+const initials = getInitials(name);
+---
+
+<div class={classes}>
+  {src ? (
+    <img src={src} alt={name || 'Avatar'} />
+  ) : (
+    <span class="avatar-placeholder">{initials}</span>
+  )}
+</div>
+

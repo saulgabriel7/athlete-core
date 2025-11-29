@@ -1,0 +1,109 @@
+---
+/**
+ * ATHLETE CORE - Dashboard Hero
+ * Saudação e resumo do dashboard
+ */
+
+import Card from '../../components/common/Card.astro';
+
+interface Props {
+  userName?: string | null;
+  stats?: {
+    totalTreinos: number;
+    mediaPerformance: number;
+    diasConsecutivos: number;
+  };
+}
+
+const { userName, stats } = Astro.props;
+
+const greeting = () => {
+  const hour = new Date().getHours();
+  if (hour < 12) return 'Bom dia';
+  if (hour < 18) return 'Boa tarde';
+  return 'Boa noite';
+};
+---
+
+<section class="dashboard-hero">
+  <div class="hero-greeting">
+    <h1>{greeting()}, {userName || 'Atleta'}!</h1>
+    <p>Pronto para mais um dia de evolução?</p>
+  </div>
+
+  {stats && (
+    <div class="hero-stats">
+      <Card class="stat-card">
+        <div class="stat">
+          <div class="stat-value">{stats.totalTreinos}</div>
+          <div class="stat-label">Treinos</div>
+        </div>
+      </Card>
+      
+      <Card class="stat-card">
+        <div class="stat">
+          <div class="stat-value">{stats.mediaPerformance}%</div>
+          <div class="stat-label">Performance</div>
+        </div>
+      </Card>
+      
+      <Card class="stat-card">
+        <div class="stat">
+          <div class="stat-value">{stats.diasConsecutivos}</div>
+          <div class="stat-label">Dias seguidos</div>
+        </div>
+      </Card>
+    </div>
+  )}
+</section>
+
+<style>
+  .dashboard-hero {
+    margin-bottom: var(--spacing-2xl);
+  }
+
+  .hero-greeting h1 {
+    font-size: var(--font-size-3xl);
+    font-weight: var(--font-weight-bold);
+    margin-bottom: var(--spacing-xs);
+  }
+
+  .hero-greeting p {
+    color: var(--color-foreground-muted);
+    font-size: var(--font-size-lg);
+    margin: 0;
+  }
+
+  .hero-stats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--spacing-lg);
+    margin-top: var(--spacing-xl);
+  }
+
+  .stat-card {
+    text-align: center;
+    background: var(--color-white);
+  }
+
+  .stat-value {
+    font-size: var(--font-size-3xl);
+    font-weight: var(--font-weight-bold);
+    line-height: 1;
+    margin-bottom: var(--spacing-xs);
+  }
+
+  .stat-label {
+    font-size: var(--font-size-sm);
+    color: var(--color-foreground-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  @media (max-width: 768px) {
+    .hero-stats {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>
+

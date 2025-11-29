@@ -1,0 +1,139 @@
+---
+/**
+ * ATHLETE CORE - Treinos Page
+ * Lista de planos de treino
+ */
+
+import DashboardLayout from '../../layouts/DashboardLayout.astro';
+import WorkoutList from '../../modules/treino/WorkoutList.astro';
+import Button from '../../components/common/Button.astro';
+import { getUserId } from '../../services/clerkServer';
+import { getWorkoutPlans } from '../../services/mcpClient';
+import type { WorkoutPlan } from '../../types/workout';
+
+const userId = getUserId(Astro.locals);
+
+let workouts: WorkoutPlan[] = [];
+let error: string | null = null;
+
+if (userId) {
+  try {
+    const response = await getWorkoutPlans(userId);
+    if (response.success) {
+      workouts = response.data;
+    } else {
+      error = response.error;
+    }
+  } catch (e) {
+    error = 'Erro ao carregar treinos';
+  }
+}
+---
+
+<DashboardLayout title="Treinos" pageTitle="Meus Treinos">
+  {error ? (
+    <div class="error-state">
+      <p>{error}</p>
+      <p class="error-hint">
+        Verifique se o servidor MCP está rodando em <code>http://localhost:3000</code>
+      </p>
+    </div>
+  ) : (
+    <WorkoutList 
+      workouts={workouts} 
+      title="Planos de Treino"
+      subtitle="Seus planos de treino personalizados"
+    >
+      <div slot="actions" class="actions">
+        <button id="generate-btn" class="btn-generate">
+          Gerar Novo Plano
+        </button>
+      </div>
+    </WorkoutList>
+  )}
+</DashboardLayout>
+
+<script define:vars={{ userId }}>
+  const btn = document.getElementById('generate-btn');
+  
+  btn?.addEventListener('click', async () => {
+    if (!confirm('Deseja gerar um novo plano de treino baseado no seu perfil?')) return;
+
+    btn.disabled = true;
+    btn.textContent = 'Gerando...';
+
+    try {
+      const res = await fetch('/api/workout/generate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ userId, diasPorSemana: 4 })
+      });
+
+      const data = await res.json();
+
+      if (data.success) {
+        window.location.reload();
+      } else {
+        alert('Erro ao gerar plano: ' + (data.error || 'Desconhecido'));
+      }
+    } catch (e) {
+      alert('Erro de conexão');
+    } finally {
+      btn.disabled = false;
+      btn.textContent = 'Gerar Novo Plano';
+    }
+  });
+</script>
+
+<style>
+  .actions {
+    margin-top: var(--spacing-md);
+    display: flex;
+    justify-content: flex-end;
+  }
+
+  .btn-generate {
+    background: var(--color-foreground);
+    color: var(--color-background);
+    border: 1px solid var(--color-foreground);
+    padding: var(--spacing-sm) var(--spacing-md);
+    cursor: pointer;
+    font-family: inherit;
+    font-size: var(--font-size-sm);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    transition: all 0.2s;
+  }
+
+  .btn-generate:hover {
+    background: var(--color-background);
+    color: var(--color-foreground);
+  }
+  
+  .btn-generate:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  .error-state {
+    text-align: center;
+    padding: var(--spacing-3xl);
+    background: var(--color-white);
+    border: var(--border-width) solid var(--color-border);
+  }
+
+  .error-state p {
+    margin: 0 0 var(--spacing-md) 0;
+  }
+
+  .error-hint {
+    font-size: var(--font-size-sm);
+    color: var(--color-foreground-muted);
+  }
+
+  .error-hint code {
+    background: var(--color-gray-light);
+    padding: 2px 6px;
+  }
+</style>
+

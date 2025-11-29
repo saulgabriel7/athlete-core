@@ -1,0 +1,94 @@
+---
+/**
+ * ATHLETE CORE - Meal Card
+ * Card de refeição
+ */
+
+import Card from '../../components/common/Card.astro';
+import { formatCalories, formatMacro, formatTags } from '../../utils/formatters';
+import type { Meal } from '../../types/meal';
+
+interface Props {
+  meal: Meal;
+  showLink?: boolean;
+}
+
+const { meal, showLink = true } = Astro.props;
+
+const tags = formatTags(meal.tags || []);
+---
+
+<Card href={showLink ? `/alimentacao/${meal.id}` : undefined} clickable={showLink}>
+  <div class="meal-card">
+    <h3 class="meal-name">{meal.nome}</h3>
+    
+    <div class="meal-macros">
+      <div class="macro-item">
+        <span class="macro-value">{formatCalories(meal.calorias)}</span>
+      </div>
+      <div class="macro-item">
+        <span class="macro-value">{formatMacro(meal.proteina)}</span>
+        <span class="macro-label">prot</span>
+      </div>
+      <div class="macro-item">
+        <span class="macro-value">{formatMacro(meal.carboidrato)}</span>
+        <span class="macro-label">carb</span>
+      </div>
+      <div class="macro-item">
+        <span class="macro-value">{formatMacro(meal.gordura)}</span>
+        <span class="macro-label">gord</span>
+      </div>
+    </div>
+
+    {tags.length > 0 && (
+      <div class="meal-tags">
+        {tags.slice(0, 3).map((tag) => (
+          <span class="tag">{tag}</span>
+        ))}
+      </div>
+    )}
+  </div>
+</Card>
+
+<style>
+  .meal-card {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-md);
+  }
+
+  .meal-name {
+    font-size: var(--font-size-lg);
+    font-weight: var(--font-weight-semibold);
+    margin: 0;
+  }
+
+  .meal-macros {
+    display: flex;
+    gap: var(--spacing-lg);
+  }
+
+  .macro-item {
+    display: flex;
+    align-items: baseline;
+    gap: var(--spacing-xs);
+  }
+
+  .macro-value {
+    font-size: var(--font-size-base);
+    font-weight: var(--font-weight-semibold);
+  }
+
+  .macro-label {
+    font-size: var(--font-size-xs);
+    color: var(--color-foreground-muted);
+    text-transform: uppercase;
+  }
+
+  .meal-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--spacing-xs);
+  }
+</style>
+

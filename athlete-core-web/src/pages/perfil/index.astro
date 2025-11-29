@@ -1,0 +1,80 @@
+---
+/**
+ * ATHLETE CORE - Perfil Page
+ * Página de perfil do usuário
+ */
+
+import DashboardLayout from '../../layouts/DashboardLayout.astro';
+import UserInfo from '../../modules/usuario/UserInfo.astro';
+import { getCurrentUser, getUserId } from '../../services/clerkServer';
+import { getUser } from '../../services/mcpClient';
+import type { User } from '../../types/user';
+
+import Button from '../../components/common/Button.astro';
+import SectionTitle from '../../components/common/SectionTitle.astro';
+
+// Obtém dados do Clerk
+const clerkUser = await getCurrentUser(Astro.locals);
+const userId = getUserId(Astro.locals);
+
+// Tenta obter dados do MCP
+let mcpUser: User | null = null;
+if (userId) {
+  try {
+    const response = await getUser(userId);
+    if (response.success) {
+      mcpUser = response.data;
+    }
+  } catch (e) {
+    // Silently fail - usuário pode não existir no MCP ainda
+  }
+}
+---
+
+<DashboardLayout title="Perfil" pageTitle="Meu Perfil">
+  <div class="header-actions">
+    <Button href="/perfil/editar" variant="outline">Editar Dados</Button>
+  </div>
+
+  <UserInfo 
+    user={mcpUser || undefined} 
+    clerkUser={clerkUser || undefined} 
+  />
+
+  {!mcpUser && (
+    <div class="setup-notice">
+      <h3>Complete seu perfil</h3>
+      <p>
+        Para ter acesso a todas as funcionalidades, configure seus dados físicos
+        e objetivos no sistema MCP.
+      </p>
+    </div>
+  )}
+</DashboardLayout>
+
+<style>
+  .setup-notice {
+    margin-top: var(--spacing-xl);
+    padding: var(--spacing-xl);
+    background: var(--color-gray-light);
+    border: var(--border-width) solid var(--color-border);
+    max-width: 800px;
+  }
+
+  .setup-notice h3 {
+    font-size: var(--font-size-lg);
+    margin: 0 0 var(--spacing-sm) 0;
+  }
+
+  .setup-notice p {
+    margin: 0;
+    color: var(--color-foreground-muted);
+  }
+
+  .header-actions {
+    display: flex;
+    justify-content: flex-end;
+    margin-bottom: var(--spacing-md);
+  }
+</style>
+

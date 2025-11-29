@@ -1,0 +1,136 @@
+---
+/**
+ * ATHLETE CORE - Alimentação Page
+ * Plano alimentar do usuário
+ */
+
+import DashboardLayout from '../../layouts/DashboardLayout.astro';
+import MealPlanList from '../../modules/alimentacao/MealPlanList.astro';
+import { getUserId } from '../../services/clerkServer';
+import { getMealPlan } from '../../services/mcpClient';
+import type { MealPlan } from '../../types/meal';
+
+const userId = getUserId(Astro.locals);
+
+let mealPlan: MealPlan | null = null;
+let error: string | null = null;
+
+if (userId) {
+  try {
+    const response = await getMealPlan(userId);
+    if (response.success && response.data.length > 0) {
+      mealPlan = response.data[0]; // Pega o plano ativo
+    }
+  } catch (e) {
+    error = 'Erro ao carregar plano alimentar';
+  }
+}
+---
+
+<DashboardLayout title="Alimentação" pageTitle="Plano Alimentar">
+  {error ? (
+    <div class="error-state">
+      <p>{error}</p>
+      <p class="error-hint">
+        Verifique se o servidor MCP está rodando em <code>http://localhost:3000</code>
+      </p>
+    </div>
+  ) : (
+    <MealPlanList 
+      mealPlan={mealPlan || undefined} 
+      title="Plano Alimentar"
+      subtitle="Seu plano alimentar semanal personalizado"
+    >
+      <div slot="actions" class="actions">
+        <button id="generate-btn" class="btn-generate">
+          Gerar Novo Plano
+        </button>
+      </div>
+    </MealPlanList>
+  )}
+</DashboardLayout>
+
+<script define:vars={{ userId }}>
+  const btn = document.getElementById('generate-btn');
+  
+  btn?.addEventListener('click', async () => {
+    if (!confirm('Deseja gerar um novo plano alimentar baseado nas suas metas?')) return;
+
+    btn.disabled = true;
+    btn.textContent = 'Gerando...';
+
+    try {
+      const res = await fetch('/api/meal-plan/generate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ userId, refeicoesPorDia: 3 })
+      });
+
+      const data = await res.json();
+
+      if (data.success) {
+        window.location.reload();
+      } else {
+        alert('Erro ao gerar plano: ' + (data.error || 'Desconhecido'));
+      }
+    } catch (e) {
+      alert('Erro de conexão');
+    } finally {
+      btn.disabled = false;
+      btn.textContent = 'Gerar Novo Plano';
+    }
+  });
+</script>
+
+<style>
+  .actions {
+    margin-top: var(--spacing-md);
+    display: flex;
+    justify-content: flex-end;
+  }
+
+  .btn-generate {
+    background: var(--color-foreground);
+    color: var(--color-background);
+    border: 1px solid var(--color-foreground);
+    padding: var(--spacing-sm) var(--spacing-md);
+    cursor: pointer;
+    font-family: inherit;
+    font-size: var(--font-size-sm);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    transition: all 0.2s;
+  }
+
+  .btn-generate:hover {
+    background: var(--color-background);
+    color: var(--color-foreground);
+  }
+  
+  .btn-generate:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  .error-state {
+    text-align: center;
+    padding: var(--spacing-3xl);
+    background: var(--color-white);
+    border: var(--border-width) solid var(--color-border);
+  }
+
+  .error-state p {
+    margin: 0 0 var(--spacing-md) 0;
+  }
+
+  .error-hint {
+    font-size: var(--font-size-sm);
+    color: var(--color-foreground-muted);
+  }
+
+  .error-hint code {
+    background: var(--color-gray-light);
+    padding: 2px 6px;
+  }
+</style>
+

@@ -1,0 +1,29 @@
+---
+/**
+ * ATHLETE CORE - Container Component
+ * Container responsivo com largura máxima
+ */
+
+interface Props {
+  size?: 'sm' | 'md' | 'lg' | 'xl';
+  class?: string;
+}
+
+const {
+  size = 'xl',
+  class: className = '',
+} = Astro.props;
+
+const classes = [
+  'container',
+  size === 'sm' && 'container-sm',
+  size === 'md' && 'container-md',
+  size === 'lg' && 'container-lg',
+  className,
+].filter(Boolean).join(' ');
+---
+
+<div class={classes}>
+  <slot />
+</div>
+

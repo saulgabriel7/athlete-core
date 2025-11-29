@@ -1,0 +1,73 @@
+---
+/**
+ * ATHLETE CORE - Meal Details Page
+ * Detalhes de uma refeição específica
+ */
+
+import DashboardLayout from '../../layouts/DashboardLayout.astro';
+import MealDetails from '../../modules/alimentacao/MealDetails.astro';
+import Button from '../../components/common/Button.astro';
+import { getMealDetails } from '../../services/mcpClient';
+import type { Meal } from '../../types/meal';
+
+const { id } = Astro.params;
+
+let meal: Meal | null = null;
+let error: string | null = null;
+
+if (id) {
+  try {
+    const response = await getMealDetails(id);
+    if (response.success) {
+      meal = response.data;
+    } else {
+      error = response.error;
+    }
+  } catch (e) {
+    error = 'Erro ao carregar refeição';
+  }
+}
+
+if (!meal && !error) {
+  return Astro.redirect('/alimentacao');
+}
+---
+
+<DashboardLayout 
+  title={meal?.nome || 'Refeição'} 
+  pageTitle={meal?.nome || 'Detalhes da Refeição'}
+>
+  <div class="page-header">
+    <Button href="/alimentacao" variant="ghost">
+      ← Voltar para alimentação
+    </Button>
+  </div>
+
+  {error ? (
+    <div class="error-state">
+      <p>{error}</p>
+      <Button href="/alimentacao">Voltar para lista</Button>
+    </div>
+  ) : meal ? (
+    <MealDetails meal={meal} />
+  ) : null}
+</DashboardLayout>
+
+<style>
+  .page-header {
+    margin-bottom: var(--spacing-xl);
+  }
+
+  .error-state {
+    text-align: center;
+    padding: var(--spacing-3xl);
+    background: var(--color-white);
+    border: var(--border-width) solid var(--color-border);
+  }
+
+  .error-state p {
+    margin: 0 0 var(--spacing-lg) 0;
+    color: var(--color-foreground-muted);
+  }
+</style>
+

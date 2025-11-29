@@ -1,0 +1,103 @@
+---
+/**
+ * ATHLETE CORE - Sign Up Module
+ * Componente de cadastro com Clerk
+ */
+
+import { SignUp } from '@clerk/astro/components';
+---
+
+<div class="auth-container">
+  <div class="auth-header">
+    <a href="/" class="logo">ATHLETE<span>CORE</span></a>
+    <p class="auth-subtitle">Crie sua conta</p>
+  </div>
+
+  <div class="auth-form">
+    <SignUp 
+      appearance={{
+        elements: {
+          rootBox: "clerk-root",
+          card: "clerk-card",
+          headerTitle: "clerk-title",
+          headerSubtitle: "clerk-subtitle",
+          formButtonPrimary: "btn btn-primary btn-lg",
+          formFieldInput: "input",
+          formFieldLabel: "label",
+          footerActionLink: "clerk-link",
+        },
+        variables: {
+          colorPrimary: "#000000",
+          colorText: "#000000",
+          colorBackground: "#ffffff",
+          borderRadius: "0px",
+        }
+      }}
+    />
+  </div>
+</div>
+
+<style>
+  .auth-container {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: var(--spacing-xl);
+    background: var(--color-background);
+  }
+
+  .auth-header {
+    text-align: center;
+    margin-bottom: var(--spacing-2xl);
+  }
+
+  .logo {
+    font-size: var(--font-size-3xl);
+    font-weight: var(--font-weight-bold);
+    letter-spacing: -0.02em;
+    text-transform: uppercase;
+    text-decoration: none;
+    color: var(--color-foreground);
+  }
+
+  .logo span {
+    font-weight: var(--font-weight-light);
+  }
+
+  .auth-subtitle {
+    margin-top: var(--spacing-sm);
+    color: var(--color-foreground-muted);
+    font-size: var(--font-size-lg);
+  }
+
+  .auth-form {
+    width: 100%;
+    max-width: 400px;
+  }
+
+  :global(.clerk-root) {
+    width: 100%;
+  }
+
+  :global(.clerk-card) {
+    border: var(--border-width) solid var(--color-border) !important;
+    box-shadow: none !important;
+    border-radius: 0 !important;
+  }
+
+  :global(.clerk-title) {
+    display: none !important;
+  }
+
+  :global(.clerk-subtitle) {
+    display: none !important;
+  }
+
+  :global(.clerk-link) {
+    color: var(--color-foreground) !important;
+    text-decoration: underline !important;
+  }
+</style>
+

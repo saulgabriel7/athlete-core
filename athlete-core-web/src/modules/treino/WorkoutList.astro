@@ -1,0 +1,98 @@
+---
+/**
+ * ATHLETE CORE - Workout List
+ * Lista de planos de treino
+ */
+
+import WorkoutCard from './WorkoutCard.astro';
+import SectionTitle from '../../components/common/SectionTitle.astro';
+import type { WorkoutPlan } from '../../types/workout';
+
+interface Props {
+  workouts: WorkoutPlan[];
+  title?: string;
+  subtitle?: string;
+}
+
+const { 
+  workouts, 
+  title = 'Meus Treinos',
+  subtitle = 'Seus planos de treino personalizados'
+} = Astro.props;
+---
+
+<section class="workout-list">
+  <div class="header">
+    <SectionTitle title={title} subtitle={subtitle} />
+    <slot name="actions" />
+  </div>
+  
+  {workouts.length > 0 ? (
+    <div class="workout-grid">
+      {workouts.map((workout) => (
+        <WorkoutCard workout={workout} />
+      ))}
+    </div>
+  ) : (
+    <div class="empty-state">
+      <div class="empty-state-icon">💪</div>
+      <p class="empty-state-title">Nenhum treino encontrado</p>
+      <p>Crie seu primeiro plano de treino para começar!</p>
+    </div>
+  )}
+</section>
+
+<style>
+  .workout-list {
+    margin-bottom: var(--spacing-2xl);
+  }
+
+  .header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: var(--spacing-lg);
+  }
+
+  .workout-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: var(--spacing-lg);
+  }
+
+  @media (max-width: 600px) {
+    .header {
+      flex-direction: column;
+      gap: var(--spacing-md);
+      align-items: stretch;
+    }
+
+    .workout-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  .empty-state {
+    text-align: center;
+    padding: var(--spacing-3xl);
+    background: var(--color-white);
+    border: var(--border-width) solid var(--color-border);
+  }
+
+  .empty-state-icon {
+    font-size: var(--font-size-4xl);
+    margin-bottom: var(--spacing-md);
+  }
+
+  .empty-state-title {
+    font-size: var(--font-size-lg);
+    font-weight: var(--font-weight-semibold);
+    margin-bottom: var(--spacing-sm);
+  }
+
+  .empty-state p:last-child {
+    color: var(--color-foreground-muted);
+    margin: 0;
+  }
+</style>
+

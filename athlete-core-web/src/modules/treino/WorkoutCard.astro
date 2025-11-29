@@ -1,0 +1,99 @@
+---
+/**
+ * ATHLETE CORE - Workout Card
+ * Card de plano de treino
+ */
+
+import Card from '../../components/common/Card.astro';
+import type { WorkoutPlan } from '../../types/workout';
+
+interface Props {
+  workout: WorkoutPlan;
+}
+
+const { workout } = Astro.props;
+
+const gruposUnicos = workout.resumo?.gruposMusculares || [];
+---
+
+<Card href={`/treino/${workout.id}`} clickable>
+  <div class="workout-card">
+    <div class="workout-header">
+      <h3 class="workout-name">{workout.nome}</h3>
+      {workout.ativo && <span class="tag tag-filled">Ativo</span>}
+    </div>
+    
+    <div class="workout-meta">
+      <span class="meta-item">
+        <strong>{workout.resumo?.totalExercicios || 0}</strong> exercícios
+      </span>
+      <span class="meta-item">
+        <strong>{workout.resumo?.diasDeTreino.length || 0}</strong> dias/semana
+      </span>
+    </div>
+
+    {gruposUnicos.length > 0 && (
+      <div class="workout-groups">
+        {gruposUnicos.slice(0, 4).map((grupo) => (
+          <span class="tag">{grupo}</span>
+        ))}
+        {gruposUnicos.length > 4 && (
+          <span class="tag">+{gruposUnicos.length - 4}</span>
+        )}
+      </div>
+    )}
+
+    {workout.observacoes && (
+      <p class="workout-obs">{workout.observacoes}</p>
+    )}
+  </div>
+</Card>
+
+<style>
+  .workout-card {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-md);
+  }
+
+  .workout-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--spacing-md);
+  }
+
+  .workout-name {
+    font-size: var(--font-size-lg);
+    font-weight: var(--font-weight-semibold);
+    margin: 0;
+  }
+
+  .workout-meta {
+    display: flex;
+    gap: var(--spacing-lg);
+    color: var(--color-foreground-muted);
+    font-size: var(--font-size-sm);
+  }
+
+  .meta-item strong {
+    color: var(--color-foreground);
+    font-weight: var(--font-weight-semibold);
+  }
+
+  .workout-groups {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--spacing-xs);
+  }
+
+  .workout-obs {
+    font-size: var(--font-size-sm);
+    color: var(--color-foreground-muted);
+    margin: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+</style>
+

@@ -1,0 +1,75 @@
+---
+/**
+ * ATHLETE CORE - Workout Details Page
+ * Detalhes de um plano de treino específico
+ */
+
+import DashboardLayout from '../../layouts/DashboardLayout.astro';
+import WorkoutDetails from '../../modules/treino/WorkoutDetails.astro';
+import Button from '../../components/common/Button.astro';
+import { getWorkoutDetails } from '../../services/mcpClient';
+import { getUserId } from '../../services/clerkServer';
+import type { WorkoutPlan } from '../../types/workout';
+
+const { id } = Astro.params;
+const userId = getUserId(Astro.locals);
+
+let workout: WorkoutPlan | null = null;
+let error: string | null = null;
+
+if (id) {
+  try {
+    const response = await getWorkoutDetails(id);
+    if (response.success) {
+      workout = response.data;
+    } else {
+      error = response.error;
+    }
+  } catch (e) {
+    error = 'Erro ao carregar treino';
+  }
+}
+
+if (!workout && !error) {
+  return Astro.redirect('/treino');
+}
+---
+
+<DashboardLayout 
+  title={workout?.nome || 'Treino'} 
+  pageTitle={workout?.nome || 'Detalhes do Treino'}
+>
+  <div class="page-header">
+    <Button href="/treino" variant="ghost">
+      ← Voltar para treinos
+    </Button>
+  </div>
+
+  {error ? (
+    <div class="error-state">
+      <p>{error}</p>
+      <Button href="/treino">Voltar para lista</Button>
+    </div>
+  ) : workout ? (
+    <WorkoutDetails workout={workout} userId={userId || undefined} />
+  ) : null}
+</DashboardLayout>
+
+<style>
+  .page-header {
+    margin-bottom: var(--spacing-xl);
+  }
+
+  .error-state {
+    text-align: center;
+    padding: var(--spacing-3xl);
+    background: var(--color-white);
+    border: var(--border-width) solid var(--color-border);
+  }
+
+  .error-state p {
+    margin: 0 0 var(--spacing-lg) 0;
+    color: var(--color-foreground-muted);
+  }
+</style>
+

@@ -1,0 +1,83 @@
+---
+/**
+ * ATHLETE CORE - Dashboard Layout
+ * Layout para páginas autenticadas com sidebar
+ */
+
+import BaseLayout from './BaseLayout.astro';
+import Sidebar from '../components/layout/Sidebar.astro';
+import Header from '../components/layout/Header.astro';
+import AIChatWidget from '../components/ai/AIChatWidget.astro';
+import { getUserId } from '../services/clerkServer';
+
+interface Props {
+  title?: string;
+  pageTitle?: string;
+  description?: string;
+}
+
+const {
+  title = 'Dashboard',
+  pageTitle,
+  description = 'Dashboard do ATHLETE CORE',
+} = Astro.props;
+
+const currentPath = Astro.url.pathname;
+const userId = getUserId(Astro.locals);
+---
+
+<BaseLayout title={title} description={description}>
+  <div class="dashboard-layout">
+    <Sidebar currentPath={currentPath} />
+    
+    <div class="dashboard-wrapper">
+      <Header title={pageTitle} />
+      
+      <main class="dashboard-content">
+        <div class="container">
+          <slot />
+        </div>
+      </main>
+    </div>
+
+    <!-- Assistente de IA -->
+    <AIChatWidget userId={userId || undefined} />
+  </div>
+</BaseLayout>
+
+<style>
+  .dashboard-layout {
+    min-height: 100vh;
+    background: var(--color-background-subtle);
+  }
+
+  /* Wrapper principal empurra o conteúdo para a direita no desktop */
+  .dashboard-wrapper {
+    margin-left: var(--sidebar-width);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    transition: margin-left var(--transition-fast);
+  }
+
+  .dashboard-content {
+    flex: 1;
+    padding: var(--spacing-xl);
+  }
+
+  .container {
+    max-width: var(--container-width);
+    margin: 0 auto;
+  }
+
+  /* Mobile */
+  @media (max-width: 768px) {
+    .dashboard-wrapper {
+      margin-left: 0;
+    }
+
+    .dashboard-content {
+      padding: var(--spacing-md);
+    }
+  }
+</style>
