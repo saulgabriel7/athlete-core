@@ -4,7 +4,7 @@
  * Componente de login com Clerk
  */
 
-import { SignIn } from '@clerk/astro/components';
+import { SignIn as ClerkSignIn } from '@clerk/astro/components';
 ---
 
 <div class="auth-container">
@@ -14,7 +14,7 @@ import { SignIn } from '@clerk/astro/components';
   </div>
 
   <div class="auth-form">
-    <SignIn 
+    <ClerkSignIn 
       appearance={{
         elements: {
           rootBox: "clerk-root",

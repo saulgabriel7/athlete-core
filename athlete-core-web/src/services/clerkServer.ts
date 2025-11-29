@@ -5,20 +5,27 @@
 
 import type { ClerkUser } from '../types/user';
 
+// Tipo para os locals do Astro com Clerk
+type ClerkLocals = {
+  auth: () => { userId: string | null };
+  currentUser: () => Promise<any>;
+};
+
 /**
  * Obtém o usuário atual da sessão Clerk
  * Deve ser chamado apenas no servidor (Astro)
  */
-export async function getCurrentUser(locals: App.Locals): Promise<ClerkUser | null> {
+export async function getCurrentUser(locals: any): Promise<ClerkUser | null> {
   try {
-    const auth = locals.auth();
+    const clerkLocals = locals as ClerkLocals;
+    const auth = clerkLocals.auth();
     
     if (!auth.userId) {
       return null;
     }
 
     // Obtém dados do usuário do Clerk
-    const user = await locals.currentUser();
+    const user = await clerkLocals.currentUser();
     
     if (!user) {
       return null;
@@ -30,9 +37,9 @@ export async function getCurrentUser(locals: App.Locals): Promise<ClerkUser | nu
       lastName: user.lastName,
       fullName: user.fullName,
       imageUrl: user.imageUrl,
-      emailAddresses: user.emailAddresses.map((e) => ({
+      emailAddresses: user.emailAddresses?.map((e: any) => ({
         emailAddress: e.emailAddress,
-      })),
+      })) || [],
     };
   } catch (error) {
     console.error('[Clerk] Erro ao obter usuário:', error);
@@ -43,9 +50,10 @@ export async function getCurrentUser(locals: App.Locals): Promise<ClerkUser | nu
 /**
  * Verifica se o usuário está autenticado
  */
-export function isAuthenticated(locals: App.Locals): boolean {
+export function isAuthenticated(locals: any): boolean {
   try {
-    const auth = locals.auth();
+    const clerkLocals = locals as ClerkLocals;
+    const auth = clerkLocals.auth();
     return !!auth.userId;
   } catch {
     return false;
@@ -57,9 +65,10 @@ export function isAuthenticated(locals: App.Locals): boolean {
  * Por enquanto retorna o user de demonstração
  * TODO: Implementar sincronização real Clerk <-> MCP
  */
-export function getUserId(locals: App.Locals): string | null {
+export function getUserId(locals: any): string | null {
   try {
-    const auth = locals.auth();
+    const clerkLocals = locals as ClerkLocals;
+    const auth = clerkLocals.auth();
     if (!auth.userId) {
       return null;
     }
@@ -74,10 +83,9 @@ export function getUserId(locals: App.Locals): string | null {
 /**
  * Redireciona para login se não autenticado
  */
-export function requireAuth(locals: App.Locals, redirect: (url: string) => Response): Response | null {
+export function requireAuth(locals: any, redirect: (url: string) => Response): Response | null {
   if (!isAuthenticated(locals)) {
     return redirect('/sign-in');
   }
   return null;
 }
-

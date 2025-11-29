@@ -2,14 +2,26 @@
 interface Props {
   class?: string;
   padding?: 'none' | 'sm' | 'md' | 'lg';
+  href?: string;
+  clickable?: boolean;
 }
 
-const { class: className = '', padding = 'lg' } = Astro.props;
+const { class: className = '', padding = 'lg', href, clickable = false } = Astro.props;
+
+const Tag = href ? 'a' : 'div';
 ---
 
-<div class={`card padding-${padding} ${className}`}>
+<Tag 
+  href={href} 
+  class:list={[
+    'card', 
+    `padding-${padding}`, 
+    { clickable },
+    className
+  ]}
+>
   <slot />
-</div>
+</Tag>
 
 <style>
   .card {
@@ -24,6 +36,17 @@ const { class: className = '', padding = 'lg' } = Astro.props;
 
   .card:hover {
     border-color: var(--color-border-hover);
+  }
+
+  .card.clickable {
+    cursor: pointer;
+    text-decoration: none;
+    color: inherit;
+    display: block;
+  }
+
+  .card.clickable:hover {
+    border-color: var(--color-foreground);
   }
 
   .padding-none { padding: 0; }

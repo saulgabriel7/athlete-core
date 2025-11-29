@@ -4,7 +4,7 @@
  * Componente de cadastro com Clerk
  */
 
-import { SignUp } from '@clerk/astro/components';
+import { SignUp as ClerkSignUp } from '@clerk/astro/components';
 ---
 
 <div class="auth-container">
@@ -14,7 +14,7 @@ import { SignUp } from '@clerk/astro/components';
   </div>
 
   <div class="auth-form">
-    <SignUp 
+    <ClerkSignUp 
       appearance={{
         elements: {
           rootBox: "clerk-root",

@@ -1,5 +1,5 @@
 import type { APIRoute } from 'astro';
-import { getUser, getWorkoutPlans, getMealPlan, getExercises } from '../../../services/mcpClient';
+import { getUser, getWorkoutPlans, getMealPlan } from '../../../services/mcpClient';
 
 const GEMINI_API_KEY = import.meta.env.GEMINI_API_KEY;
 // Usando Gemini 2.0 Flash (modelo mais recente disponível)
@@ -80,8 +80,7 @@ export const POST: APIRoute = async ({ request }) => {
 - Altura: ${user.altura}cm
 - Objetivo: ${user.objetivoFisico}
 - Nível: ${user.nivelExperiencia}
-- IMC: ${user.imc?.toFixed(1) || 'N/A'}
-- TMB: ${user.tmb?.toFixed(0) || 'N/A'} kcal
+${(user as any).imc ? `- IMC: ${(user as any).imc.toFixed(1)}` : ''}
 ${user.restricoesAlimentares?.length ? `- Restrições: ${user.restricoesAlimentares.join(', ')}` : ''}
 `;
         }
