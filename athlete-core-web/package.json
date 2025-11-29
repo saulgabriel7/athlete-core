@@ -3,6 +3,9 @@
   "type": "module",
   "version": "1.0.0",
   "description": "Frontend do ATHLETE CORE - Sistema de gerenciamento de treinos e alimentação",
+  "engines": {
+    "node": ">=20.0.0"
+  },
   "scripts": {
     "dev": "astro dev",
     "start": "astro dev",

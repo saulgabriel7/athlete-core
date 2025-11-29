@@ -6,9 +6,7 @@ import clerk from '@clerk/astro';
 // https://astro.build/config
 export default defineConfig({
   output: 'server',
-  adapter: vercel({
-    runtime: 'nodejs20.x'
-  }),
+  adapter: vercel(),
   integrations: [
     clerk({
       afterSignInUrl: '/dashboard',
