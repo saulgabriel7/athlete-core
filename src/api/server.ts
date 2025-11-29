@@ -17,15 +17,21 @@ import { checkDatabaseConnection } from "../db/prisma.js";
 
 const PORT = process.env.PORT || 3000;
 
+// Tipo flexível para as ferramentas
+type ToolHandler = {
+  handler: (params: any) => Promise<unknown>;
+  [key: string]: unknown;
+};
+
 // Todas as ferramentas disponíveis
-const allTools: Record<string, { handler: (params: Record<string, unknown>) => Promise<unknown> }> = {
+const allTools: Record<string, ToolHandler> = {
   ...userTools,
   ...exerciseTools,
   ...workoutPlanTools,
   ...workoutSessionTools,
   ...mealTools,
   ...mealPlanTools,
-};
+} as Record<string, ToolHandler>;
 
 /**
  * Parse do body JSON
