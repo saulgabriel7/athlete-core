@@ -4,6 +4,7 @@ import { getUser } from '../../services/mcpClient';
 import { getUserId } from '../../services/clerkServer';
 import SectionTitle from '../../components/common/SectionTitle.astro';
 import Button from '../../components/common/Button.astro';
+import Card from '../../components/common/Card.astro';
 
 const userId = getUserId(Astro.locals);
 let user = null;
@@ -27,56 +28,71 @@ const initialData = user || {
 ---
 
 <DashboardLayout title="Editar Perfil" pageTitle="Editar Dados">
+  <div class="page-header">
+    <Button href="/perfil" variant="ghost">
+      ← Voltar para perfil
+    </Button>
+  </div>
+
   <div class="edit-container">
-    <SectionTitle title="Seus Dados Físicos" />
-    
-    <form id="profile-form" class="form-grid">
-      <input type="hidden" name="id" value={userId} />
+    <Card class="form-card">
+      <h2 class="form-title">
+        <span class="title-icon">✏️</span>
+        Seus Dados Físicos
+      </h2>
       
-      <div class="form-group">
-        <label for="nome">Nome</label>
-        <input type="text" id="nome" name="nome" value={initialData.nome} required />
-      </div>
+      <form id="profile-form" class="form-grid">
+        <input type="hidden" name="id" value={userId} />
+        
+        <div class="form-group">
+          <label for="nome">Nome</label>
+          <input type="text" id="nome" name="nome" value={initialData.nome} placeholder="Seu nome" required />
+        </div>
 
-      <div class="form-group">
-        <label for="idade">Idade (anos)</label>
-        <input type="number" id="idade" name="idade" value={initialData.idade} required />
-      </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="idade">Idade (anos)</label>
+            <input type="number" id="idade" name="idade" value={initialData.idade} placeholder="25" required />
+          </div>
 
-      <div class="form-group">
-        <label for="peso">Peso (kg)</label>
-        <input type="number" id="peso" name="peso" step="0.1" value={initialData.peso} required />
-      </div>
+          <div class="form-group">
+            <label for="peso">Peso (kg)</label>
+            <input type="number" id="peso" name="peso" step="0.1" value={initialData.peso} placeholder="75.0" required />
+          </div>
 
-      <div class="form-group">
-        <label for="altura">Altura (cm)</label>
-        <input type="number" id="altura" name="altura" value={initialData.altura} required />
-      </div>
+          <div class="form-group">
+            <label for="altura">Altura (cm)</label>
+            <input type="number" id="altura" name="altura" value={initialData.altura} placeholder="175" required />
+          </div>
+        </div>
 
-      <div class="form-group">
-        <label for="objetivoFisico">Objetivo</label>
-        <select id="objetivoFisico" name="objetivoFisico" required>
-          <option value="hipertrofia" selected={initialData.objetivoFisico === 'hipertrofia'}>Hipertrofia</option>
-          <option value="emagrecimento" selected={initialData.objetivoFisico === 'emagrecimento'}>Emagrecimento</option>
-          <option value="condicionamento" selected={initialData.objetivoFisico === 'condicionamento'}>Condicionamento</option>
-          <option value="performance" selected={initialData.objetivoFisico === 'performance'}>Performance</option>
-        </select>
-      </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="objetivoFisico">Objetivo</label>
+            <select id="objetivoFisico" name="objetivoFisico" required>
+              <option value="hipertrofia" selected={initialData.objetivoFisico === 'hipertrofia'}>Hipertrofia</option>
+              <option value="emagrecimento" selected={initialData.objetivoFisico === 'emagrecimento'}>Emagrecimento</option>
+              <option value="condicionamento" selected={initialData.objetivoFisico === 'condicionamento'}>Condicionamento</option>
+              <option value="performance" selected={initialData.objetivoFisico === 'performance'}>Performance</option>
+            </select>
+          </div>
 
-      <div class="form-group">
-        <label for="nivelExperiencia">Nível de Experiência</label>
-        <select id="nivelExperiencia" name="nivelExperiencia" required>
-          <option value="iniciante" selected={initialData.nivelExperiencia === 'iniciante'}>Iniciante</option>
-          <option value="intermediario" selected={initialData.nivelExperiencia === 'intermediario'}>Intermediário</option>
-          <option value="avancado" selected={initialData.nivelExperiencia === 'avancado'}>Avançado</option>
-        </select>
-      </div>
+          <div class="form-group">
+            <label for="nivelExperiencia">Nível de Experiência</label>
+            <select id="nivelExperiencia" name="nivelExperiencia" required>
+              <option value="iniciante" selected={initialData.nivelExperiencia === 'iniciante'}>Iniciante</option>
+              <option value="intermediario" selected={initialData.nivelExperiencia === 'intermediario'}>Intermediário</option>
+              <option value="avancado" selected={initialData.nivelExperiencia === 'avancado'}>Avançado</option>
+            </select>
+          </div>
+        </div>
 
-      <div class="form-actions">
-        <Button type="submit" variant="primary">Salvar Alterações</Button>
-        <Button href="/perfil" variant="outline">Cancelar</Button>
-      </div>
-    </form>
+        <div class="form-actions">
+          <Button type="submit" variant="primary">Salvar Alterações</Button>
+          <Button href="/perfil" variant="outline">Cancelar</Button>
+        </div>
+      </form>
+    </Card>
   </div>
 </DashboardLayout>
 
@@ -116,17 +132,60 @@ const initialData = user || {
 </script>
 
 <style>
+  .page-header {
+    margin-bottom: var(--spacing-lg);
+  }
+
   .edit-container {
-    max-width: 600px;
-    margin-top: var(--spacing-lg);
+    max-width: 700px;
+    animation: fadeInUp var(--transition-base) ease-out;
+  }
+
+  @keyframes fadeInUp {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .form-card {
+    padding: var(--spacing-xl);
+  }
+
+  .form-title {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    font-size: var(--font-size-lg);
+    font-weight: var(--font-weight-semibold);
+    margin: 0 0 var(--spacing-xl) 0;
+    padding-bottom: var(--spacing-md);
+    border-bottom: 1px solid var(--color-border);
+    color: var(--color-foreground);
+  }
+
+  .title-icon {
+    font-size: var(--font-size-xl);
   }
 
   .form-grid {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-lg);
+  }
+
+  .form-row {
     display: grid;
+    grid-template-columns: repeat(3, 1fr);
     gap: var(--spacing-md);
-    background: white;
-    padding: var(--spacing-lg);
-    border: var(--border-width) solid var(--color-border);
+  }
+
+  .form-row:nth-child(4) {
+    grid-template-columns: repeat(2, 1fr);
   }
 
   .form-group {
@@ -137,31 +196,52 @@ const initialData = user || {
 
   label {
     font-size: var(--font-size-sm);
-    font-weight: 500;
+    font-weight: var(--font-weight-medium);
     color: var(--color-foreground-muted);
     text-transform: uppercase;
-    letter-spacing: 0.05em;
+    letter-spacing: var(--letter-spacing-wide);
   }
 
   input, select {
-    padding: var(--spacing-sm);
-    border: var(--border-width) solid var(--color-border);
+    padding: var(--spacing-md);
+    border: 1px solid var(--color-border);
     font-family: inherit;
     font-size: var(--font-size-base);
-    background: var(--color-background);
+    background: var(--color-background-elevated);
     color: var(--color-foreground);
-    border-radius: 0;
+    border-radius: var(--radius-md);
+    transition: all var(--transition-fast);
+  }
+
+  input::placeholder {
+    color: var(--color-foreground-subtle);
   }
 
   input:focus, select:focus {
     outline: none;
-    border-color: var(--color-foreground);
+    border-color: var(--color-accent);
+    box-shadow: 0 0 0 3px var(--color-accent-muted);
+  }
+
+  select {
+    cursor: pointer;
   }
 
   .form-actions {
     display: flex;
     gap: var(--spacing-md);
     margin-top: var(--spacing-md);
+    padding-top: var(--spacing-lg);
+    border-top: 1px solid var(--color-border);
+  }
+
+  @media (max-width: 600px) {
+    .form-row {
+      grid-template-columns: 1fr;
+    }
+
+    .form-row:nth-child(4) {
+      grid-template-columns: 1fr;
+    }
   }
 </style>
-

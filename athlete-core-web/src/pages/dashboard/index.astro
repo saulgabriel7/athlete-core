@@ -1,7 +1,7 @@
 ---
 /**
  * ATHLETE CORE - Dashboard Page
- * Página principal do dashboard
+ * Página principal do dashboard com design premium
  */
 
 import DashboardLayout from '../../layouts/DashboardLayout.astro';
@@ -15,7 +15,7 @@ import { getUserStats } from '../../services/mcpClient';
 const clerkUser = await getCurrentUser(Astro.locals);
 const userId = getUserId(Astro.locals);
 
-// Tenta obter stats do MCP (pode falhar se usuário não existir no MCP)
+// Tenta obter stats do MCP
 let stats = null;
 if (userId) {
   try {
@@ -39,74 +39,225 @@ if (userId) {
     } : undefined}
   />
 
-  <section class="quick-actions">
-    <h2 class="section-title">Acesso Rápido</h2>
+  <section class="quick-actions animate-fade-in stagger-2">
+    <h2 class="section-title">
+      <span class="title-icon">⚡</span>
+      Acesso Rápido
+    </h2>
     
     <div class="actions-grid">
       <Card href="/treino" clickable class="action-card">
-        <div class="action-icon">💪</div>
-        <h3>Treinos</h3>
-        <p>Veja seus planos de treino e histórico de sessões</p>
+        <div class="action-icon workout">
+          <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="m6.5 6.5 11 11"/><path d="m21 21-1-1"/><path d="m3 3 1 1"/><path d="m18 22 4-4"/><path d="m2 6 4-4"/><path d="m3 10 7-7"/><path d="m14 21 7-7"/>
+          </svg>
+        </div>
+        <div class="action-content">
+          <h3>Treinos</h3>
+          <p>Planos de treino e histórico de sessões</p>
+        </div>
+        <span class="action-arrow">→</span>
       </Card>
 
       <Card href="/alimentacao" clickable class="action-card">
-        <div class="action-icon">🥗</div>
-        <h3>Alimentação</h3>
-        <p>Seu plano alimentar semanal com macros</p>
+        <div class="action-icon food">
+          <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2"/><path d="M7 2v20"/><path d="M21 15V2v0a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3Zm0 0v7"/>
+          </svg>
+        </div>
+        <div class="action-content">
+          <h3>Alimentação</h3>
+          <p>Plano alimentar semanal com macros</p>
+        </div>
+        <span class="action-arrow">→</span>
       </Card>
 
       <Card href="/perfil" clickable class="action-card">
-        <div class="action-icon">👤</div>
-        <h3>Perfil</h3>
-        <p>Suas informações e configurações</p>
+        <div class="action-icon profile">
+          <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>
+          </svg>
+        </div>
+        <div class="action-content">
+          <h3>Perfil</h3>
+          <p>Suas informações e configurações</p>
+        </div>
+        <span class="action-arrow">→</span>
       </Card>
     </div>
+  </section>
+
+  <!-- Tip Card -->
+  <section class="tip-section animate-fade-in stagger-3">
+    <Card class="tip-card">
+      <div class="tip-icon">💡</div>
+      <div class="tip-content">
+        <h4>Dica do dia</h4>
+        <p>Use o assistente de IA (botão no canto inferior direito) para criar treinos personalizados e tirar dúvidas sobre nutrição!</p>
+      </div>
+    </Card>
   </section>
 </DashboardLayout>
 
 <style>
   .quick-actions {
-    margin-top: var(--spacing-2xl);
+    margin-top: var(--spacing-xl);
   }
 
   .section-title {
-    font-size: var(--font-size-xl);
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    font-size: var(--font-size-lg);
     font-weight: var(--font-weight-semibold);
     margin-bottom: var(--spacing-lg);
+    color: var(--color-foreground);
+  }
+
+  .title-icon {
+    font-size: var(--font-size-xl);
   }
 
   .actions-grid {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
-    gap: var(--spacing-lg);
+    gap: var(--spacing-md);
   }
 
   .action-card {
-    text-align: center;
-    padding: var(--spacing-xl);
-    background: var(--color-white);
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-md);
+    padding: var(--spacing-lg) !important;
+    position: relative;
   }
 
   .action-icon {
-    font-size: var(--font-size-4xl);
-    margin-bottom: var(--spacing-md);
+    width: 56px;
+    height: 56px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: var(--radius-lg);
+    flex-shrink: 0;
+    transition: all var(--transition-fast);
+  }
+
+  .action-icon.workout {
+    background: var(--color-accent-muted);
+    color: var(--color-accent);
+    border: 1px solid rgba(196, 255, 59, 0.2);
+  }
+
+  .action-icon.food {
+    background: rgba(59, 130, 246, 0.1);
+    color: var(--color-secondary);
+    border: 1px solid rgba(59, 130, 246, 0.2);
+  }
+
+  .action-icon.profile {
+    background: rgba(168, 85, 247, 0.1);
+    color: #a855f7;
+    border: 1px solid rgba(168, 85, 247, 0.2);
+  }
+
+  .action-content {
+    flex: 1;
+    min-width: 0;
   }
 
   .action-card h3 {
-    font-size: var(--font-size-lg);
-    margin: 0 0 var(--spacing-sm) 0;
+    font-size: var(--font-size-base);
+    font-weight: var(--font-weight-semibold);
+    margin: 0 0 4px 0;
+    color: var(--color-foreground);
   }
 
   .action-card p {
     font-size: var(--font-size-sm);
     color: var(--color-foreground-muted);
     margin: 0;
+    line-height: var(--line-height-normal);
   }
 
-  @media (max-width: 768px) {
+  .action-arrow {
+    font-size: var(--font-size-xl);
+    color: var(--color-foreground-subtle);
+    transition: all var(--transition-fast);
+    opacity: 0;
+    transform: translateX(-8px);
+  }
+
+  .action-card:hover .action-arrow {
+    opacity: 1;
+    transform: translateX(0);
+    color: var(--color-accent);
+  }
+
+  .action-card:hover .action-icon {
+    transform: scale(1.05);
+  }
+
+  /* Tip Section */
+  .tip-section {
+    margin-top: var(--spacing-xl);
+  }
+
+  .tip-card {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--spacing-md);
+    background: linear-gradient(135deg, rgba(59, 130, 246, 0.1) 0%, rgba(59, 130, 246, 0.05) 100%);
+    border-color: rgba(59, 130, 246, 0.2);
+  }
+
+  .tip-card:hover {
+    border-color: rgba(59, 130, 246, 0.4);
+  }
+
+  .tip-icon {
+    font-size: var(--font-size-2xl);
+    flex-shrink: 0;
+  }
+
+  .tip-content h4 {
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-secondary);
+    margin: 0 0 var(--spacing-xs) 0;
+    text-transform: uppercase;
+    letter-spacing: var(--letter-spacing-wide);
+  }
+
+  .tip-content p {
+    font-size: var(--font-size-sm);
+    color: var(--color-foreground-muted);
+    margin: 0;
+    line-height: var(--line-height-relaxed);
+  }
+
+  /* Animation */
+  .animate-fade-in {
+    animation: fadeInUp var(--transition-base) ease-out backwards;
+  }
+
+  .stagger-2 { animation-delay: 200ms; }
+  .stagger-3 { animation-delay: 300ms; }
+
+  @keyframes fadeInUp {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @media (max-width: 900px) {
     .actions-grid {
       grid-template-columns: 1fr;
     }
   }
 </style>
-

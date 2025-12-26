@@ -1,7 +1,7 @@
 ---
 /**
  * ATHLETE CORE - Workout List
- * Lista de planos de treino
+ * Lista de planos de treino com design premium
  */
 
 import WorkoutCard from './WorkoutCard.astro';
@@ -29,15 +29,23 @@ const {
   
   {workouts.length > 0 ? (
     <div class="workout-grid">
-      {workouts.map((workout) => (
-        <WorkoutCard workout={workout} />
+      {workouts.map((workout, index) => (
+        <div class="workout-item" style={`animation-delay: ${index * 50}ms`}>
+          <WorkoutCard workout={workout} />
+        </div>
       ))}
     </div>
   ) : (
     <div class="empty-state">
-      <div class="empty-state-icon">💪</div>
-      <p class="empty-state-title">Nenhum treino encontrado</p>
-      <p>Crie seu primeiro plano de treino para começar!</p>
+      <div class="empty-icon">
+        <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="m6.5 6.5 11 11"/><path d="m21 21-1-1"/><path d="m3 3 1 1"/><path d="m18 22 4-4"/><path d="m2 6 4-4"/><path d="m3 10 7-7"/><path d="m14 21 7-7"/>
+        </svg>
+      </div>
+      <h3 class="empty-title">Nenhum treino encontrado</h3>
+      <p class="empty-description">
+        Crie seu primeiro plano de treino para começar sua jornada!
+      </p>
     </div>
   )}
 </section>
@@ -51,19 +59,34 @@ const {
     display: flex;
     justify-content: space-between;
     align-items: flex-start;
-    margin-bottom: var(--spacing-lg);
+    margin-bottom: var(--spacing-xl);
+    gap: var(--spacing-md);
   }
 
   .workout-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
     gap: var(--spacing-lg);
+  }
+
+  .workout-item {
+    animation: fadeInUp var(--transition-base) ease-out backwards;
+  }
+
+  @keyframes fadeInUp {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
   }
 
   @media (max-width: 600px) {
     .header {
       flex-direction: column;
-      gap: var(--spacing-md);
       align-items: stretch;
     }
 
@@ -74,25 +97,35 @@ const {
 
   .empty-state {
     text-align: center;
-    padding: var(--spacing-3xl);
-    background: var(--color-white);
-    border: var(--border-width) solid var(--color-border);
+    padding: var(--spacing-4xl) var(--spacing-xl);
+    background: var(--glass-background);
+    border: 1px dashed var(--color-border);
+    border-radius: var(--radius-xl);
   }
 
-  .empty-state-icon {
-    font-size: var(--font-size-4xl);
-    margin-bottom: var(--spacing-md);
+  .empty-icon {
+    width: 80px;
+    height: 80px;
+    margin: 0 auto var(--spacing-lg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--color-accent-muted);
+    border-radius: var(--radius-xl);
+    color: var(--color-accent);
   }
 
-  .empty-state-title {
-    font-size: var(--font-size-lg);
+  .empty-title {
+    font-size: var(--font-size-xl);
     font-weight: var(--font-weight-semibold);
-    margin-bottom: var(--spacing-sm);
+    margin: 0 0 var(--spacing-sm) 0;
+    color: var(--color-foreground);
   }
 
-  .empty-state p:last-child {
+  .empty-description {
     color: var(--color-foreground-muted);
     margin: 0;
+    max-width: 400px;
+    margin: 0 auto;
   }
 </style>
-

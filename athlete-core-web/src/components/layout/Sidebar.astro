@@ -1,7 +1,7 @@
 ---
 /**
  * ATHLETE CORE - Sidebar Component
- * Menu lateral de navegação
+ * Menu lateral de navegação premium
  */
 
 import { SIDEBAR_NAV } from '../../utils/constants';
@@ -12,12 +12,12 @@ interface Props {
 
 const { currentPath = '' } = Astro.props;
 
-// Ícones SVG inline (Clean lines)
+// Ícones SVG inline
 const icons: Record<string, string> = {
-  home: `<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>`,
-  dumbbell: `<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6.5 6.5 11 11"/><path d="m21 21-1-1"/><path d="m3 3 1 1"/><path d="m18 22 4-4"/><path d="m2 6 4-4"/><path d="m3 10 7-7"/><path d="m14 21 7-7"/></svg>`,
-  utensils: `<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2"/><path d="M7 2v20"/><path d="M21 15V2v0a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3Zm0 0v7"/></svg>`,
-  user: `<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>`,
+  home: `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>`,
+  dumbbell: `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6.5 6.5 11 11"/><path d="m21 21-1-1"/><path d="m3 3 1 1"/><path d="m18 22 4-4"/><path d="m2 6 4-4"/><path d="m3 10 7-7"/><path d="m14 21 7-7"/></svg>`,
+  utensils: `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2"/><path d="M7 2v20"/><path d="M21 15V2v0a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3Zm0 0v7"/></svg>`,
+  user: `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>`,
 };
 
 function isActive(href: string, current: string): boolean {
@@ -33,27 +33,37 @@ function isActive(href: string, current: string): boolean {
 <aside class="sidebar" id="sidebar">
   <div class="sidebar-header">
     <a href="/dashboard" class="logo">
-      ATHLETE<span class="logo-light">CORE</span>
+      <span class="logo-main">ATHLETE</span><span class="logo-accent">CORE</span>
     </a>
-    <button class="close-btn" id="sidebar-close" aria-label="Fechar menu">✕</button>
+    <button class="close-btn" id="sidebar-close" aria-label="Fechar menu">
+      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M18 6 6 18"/><path d="m6 6 12 12"/>
+      </svg>
+    </button>
   </div>
 
   <nav class="sidebar-nav">
-    {SIDEBAR_NAV.map((item) => (
+    {SIDEBAR_NAV.map((item, index) => (
       <a 
         href={item.href} 
-        class={`nav-link ${isActive(item.href, currentPath) ? 'active' : ''}`}
+        class:list={['nav-link', { active: isActive(item.href, currentPath) }]}
+        style={`animation-delay: ${index * 50}ms`}
       >
         <span class="nav-icon" set:html={icons[item.icon]} />
         <span class="nav-label">{item.label}</span>
+        {isActive(item.href, currentPath) && <span class="nav-indicator"></span>}
       </a>
     ))}
   </nav>
 
   <div class="sidebar-footer">
+    <div class="sidebar-version">
+      <span class="version-label">Version</span>
+      <span class="version-number">1.0.0</span>
+    </div>
     <a href="/" class="nav-link logout-link">
       <span class="nav-icon">
-        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
           <polyline points="16 17 21 12 16 7"/>
           <line x1="21" x2="9" y1="12" y2="12"/>
@@ -70,13 +80,24 @@ function isActive(href: string, current: string): boolean {
     height: 100vh;
     display: flex;
     flex-direction: column;
-    border-right: 1px solid var(--color-border);
     background: var(--color-background);
+    border-right: 1px solid var(--color-border);
     position: fixed;
     top: 0;
     left: 0;
-    z-index: 50;
-    transition: transform var(--transition-fast);
+    z-index: var(--z-sidebar);
+    transition: transform var(--transition-base);
+  }
+
+  .sidebar::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 200px;
+    background: var(--gradient-sidebar);
+    pointer-events: none;
   }
 
   .sidebar-overlay {
@@ -86,9 +107,12 @@ function isActive(href: string, current: string): boolean {
     left: 0;
     right: 0;
     bottom: 0;
-    background: rgba(0, 0, 0, 0.2);
-    z-index: 40;
-    backdrop-filter: blur(2px);
+    background: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+    z-index: calc(var(--z-sidebar) - 1);
+    opacity: 0;
+    transition: opacity var(--transition-base);
   }
 
   .sidebar-header {
@@ -98,28 +122,45 @@ function isActive(href: string, current: string): boolean {
     justify-content: space-between;
     padding: 0 var(--spacing-lg);
     border-bottom: 1px solid var(--color-border);
+    position: relative;
+    z-index: 1;
   }
 
   .logo {
+    display: flex;
+    align-items: center;
+    gap: 0.2em;
     font-size: var(--font-size-lg);
-    font-weight: 700;
-    letter-spacing: -0.03em;
+    font-weight: var(--font-weight-bold);
+    letter-spacing: var(--letter-spacing-tight);
     text-decoration: none;
     color: var(--color-foreground);
   }
 
-  .logo-light {
-    font-weight: 300;
-    color: var(--color-foreground-muted);
+  .logo-main {
+    color: var(--color-foreground);
+  }
+
+  .logo-accent {
+    color: var(--color-accent);
+    font-weight: var(--font-weight-light);
   }
 
   .close-btn {
-    display: none; /* Apenas mobile */
+    display: none;
     background: none;
-    border: none;
-    font-size: 1.25rem;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    padding: var(--spacing-xs);
     cursor: pointer;
     color: var(--color-foreground-muted);
+    transition: all var(--transition-fast);
+  }
+
+  .close-btn:hover {
+    color: var(--color-foreground);
+    border-color: var(--color-border-hover);
+    background: var(--color-background-elevated);
   }
 
   .sidebar-nav {
@@ -127,33 +168,35 @@ function isActive(href: string, current: string): boolean {
     padding: var(--spacing-md);
     display: flex;
     flex-direction: column;
-    gap: 4px;
+    gap: var(--spacing-xs);
+    position: relative;
+    z-index: 1;
   }
 
   .nav-link {
     display: flex;
     align-items: center;
-    gap: var(--spacing-sm);
-    padding: 0.5rem 0.75rem;
+    gap: var(--spacing-md);
+    padding: var(--spacing-md);
     color: var(--color-foreground-muted);
     font-size: var(--font-size-sm);
-    font-weight: 500;
+    font-weight: var(--font-weight-medium);
     text-decoration: none;
     transition: all var(--transition-fast);
     border-radius: var(--radius-md);
-    border: 1px solid transparent;
+    position: relative;
+    animation: fadeInUp var(--transition-base) ease-out backwards;
   }
 
   .nav-link:hover {
     color: var(--color-foreground);
-    background: var(--color-background-subtle);
+    background: var(--color-background-elevated);
   }
 
   .nav-link.active {
-    color: var(--color-foreground);
-    background: var(--color-background-subtle);
-    border-color: var(--color-border);
-    font-weight: 600;
+    color: var(--color-accent);
+    background: var(--color-accent-muted);
+    font-weight: var(--font-weight-semibold);
   }
 
   .nav-icon {
@@ -161,25 +204,63 @@ function isActive(href: string, current: string): boolean {
     align-items: center;
     justify-content: center;
     opacity: 0.7;
+    transition: all var(--transition-fast);
+  }
+
+  .nav-link:hover .nav-icon,
+  .nav-link.active .nav-icon {
+    opacity: 1;
   }
 
   .nav-link.active .nav-icon {
-    opacity: 1;
+    color: var(--color-accent);
+  }
+
+  .nav-indicator {
+    position: absolute;
+    right: var(--spacing-md);
+    width: 6px;
+    height: 6px;
+    background: var(--color-accent);
+    border-radius: var(--radius-full);
+    box-shadow: 0 0 8px var(--color-accent);
   }
 
   .sidebar-footer {
     padding: var(--spacing-md);
     border-top: 1px solid var(--color-border);
+    position: relative;
+    z-index: 1;
+  }
+
+  .sidebar-version {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: var(--spacing-sm) var(--spacing-md);
+    margin-bottom: var(--spacing-sm);
+    font-size: var(--font-size-xs);
+    color: var(--color-foreground-subtle);
+  }
+
+  .version-number {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    background: var(--color-background-elevated);
+    padding: 2px 8px;
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--color-border);
   }
 
   .logout-link:hover {
-    background: var(--color-error);
-    color: white;
-    border-color: var(--color-error);
+    background: rgba(239, 68, 68, 0.1);
+    color: var(--color-error);
+    border-color: transparent;
   }
   
   .logout-link:hover .nav-icon {
     opacity: 1;
+    color: var(--color-error);
   }
 
   /* Mobile Styles */
@@ -190,15 +271,28 @@ function isActive(href: string, current: string): boolean {
 
     .sidebar.open {
       transform: translateX(0);
-      box-shadow: 0 0 20px rgba(0,0,0,0.1);
     }
 
     .sidebar-overlay.open {
       display: block;
+      opacity: 1;
     }
 
     .close-btn {
-      display: block;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+  }
+
+  @keyframes fadeInUp {
+    from {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
     }
   }
 </style>

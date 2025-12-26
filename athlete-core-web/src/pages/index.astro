@@ -1,7 +1,7 @@
 ---
 /**
  * ATHLETE CORE - Home Page
- * Página inicial com CTA para login
+ * Landing page com design premium dark mode
  */
 
 import BaseLayout from '../layouts/BaseLayout.astro';
@@ -11,45 +11,90 @@ import { SignedIn, SignedOut } from '@clerk/astro/components';
 
 <BaseLayout title="ATHLETE CORE" description="Sistema de gerenciamento de treinos e alimentação">
   <main class="home">
+    <!-- Background Effects -->
+    <div class="bg-effects">
+      <div class="glow glow-1"></div>
+      <div class="glow glow-2"></div>
+      <div class="grid-overlay"></div>
+    </div>
+
     <div class="home-content">
-      <div class="logo-container">
-        <h1 class="logo">ATHLETE<span>CORE</span></h1>
+      <!-- Logo -->
+      <div class="logo-container animate-fade-in">
+        <div class="logo-badge">PERFORMANCE SYSTEM</div>
+        <h1 class="logo">
+          <span class="logo-main">ATHLETE</span><span class="logo-accent">CORE</span>
+        </h1>
       </div>
       
-      <p class="tagline">
-        Seu sistema completo de<br />
-        <strong>treinos</strong> e <strong>alimentação</strong>
+      <!-- Tagline -->
+      <p class="tagline animate-fade-in stagger-1">
+        Transforme seu treino com<br />
+        <span class="tagline-highlight">inteligência artificial</span>
       </p>
 
-      <div class="cta-buttons">
+      <!-- CTA Buttons -->
+      <div class="cta-buttons animate-fade-in stagger-2">
         <SignedIn>
           <Button href="/dashboard" variant="primary" size="lg">
+            <span class="btn-icon">→</span>
             Acessar Dashboard
           </Button>
         </SignedIn>
         
         <SignedOut>
           <Button href="/sign-in" variant="primary" size="lg">
-            Entrar
+            Começar Agora
           </Button>
-          <Button href="/sign-up" size="lg">
+          <Button href="/sign-up" variant="outline" size="lg">
             Criar Conta
           </Button>
         </SignedOut>
       </div>
 
-      <div class="features">
+      <!-- Features -->
+      <div class="features animate-fade-in stagger-3">
         <div class="feature">
-          <span class="feature-icon">💪</span>
+          <div class="feature-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="m6.5 6.5 11 11"/><path d="m21 21-1-1"/><path d="m3 3 1 1"/><path d="m18 22 4-4"/><path d="m2 6 4-4"/><path d="m3 10 7-7"/><path d="m14 21 7-7"/>
+            </svg>
+          </div>
           <span class="feature-text">Treinos Personalizados</span>
         </div>
         <div class="feature">
-          <span class="feature-icon">🥗</span>
-          <span class="feature-text">Planos Alimentares</span>
+          <div class="feature-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2"/><path d="M7 2v20"/><path d="M21 15V2v0a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3Zm0 0v7"/>
+            </svg>
+          </div>
+          <span class="feature-text">Nutrição Inteligente</span>
         </div>
         <div class="feature">
-          <span class="feature-icon">📊</span>
-          <span class="feature-text">Acompanhamento</span>
+          <div class="feature-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 8V4H8"/><rect width="16" height="12" x="4" y="8" rx="2"/><path d="M2 14h2"/><path d="M20 14h2"/><path d="M15 13v2"/><path d="M9 13v2"/>
+            </svg>
+          </div>
+          <span class="feature-text">Assistente IA</span>
+        </div>
+      </div>
+
+      <!-- Stats -->
+      <div class="stats animate-fade-in stagger-4">
+        <div class="stat">
+          <span class="stat-value">100+</span>
+          <span class="stat-label">Exercícios</span>
+        </div>
+        <div class="stat-divider"></div>
+        <div class="stat">
+          <span class="stat-value">50+</span>
+          <span class="stat-label">Refeições</span>
+        </div>
+        <div class="stat-divider"></div>
+        <div class="stat">
+          <span class="stat-value">24/7</span>
+          <span class="stat-label">IA Online</span>
         </div>
       </div>
     </div>
@@ -68,42 +113,127 @@ import { SignedIn, SignedOut } from '@clerk/astro/components';
     align-items: center;
     justify-content: center;
     padding: var(--spacing-xl);
-    background: var(--color-white);
+    position: relative;
+    overflow: hidden;
+  }
+
+  /* Background Effects */
+  .bg-effects {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    overflow: hidden;
+  }
+
+  .glow {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(100px);
+    opacity: 0.4;
+  }
+
+  .glow-1 {
+    width: 600px;
+    height: 600px;
+    background: var(--color-accent);
+    top: -200px;
+    left: 50%;
+    transform: translateX(-50%);
+    opacity: 0.15;
+  }
+
+  .glow-2 {
+    width: 400px;
+    height: 400px;
+    background: var(--color-secondary);
+    bottom: -100px;
+    right: -100px;
+    opacity: 0.1;
+  }
+
+  .grid-overlay {
+    position: absolute;
+    inset: 0;
+    background-image: 
+      linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+    background-size: 60px 60px;
+    mask-image: radial-gradient(ellipse at center, black 20%, transparent 70%);
+    -webkit-mask-image: radial-gradient(ellipse at center, black 20%, transparent 70%);
   }
 
   .home-content {
     text-align: center;
-    max-width: 600px;
+    max-width: 700px;
+    position: relative;
+    z-index: 1;
   }
 
+  /* Logo */
   .logo-container {
     margin-bottom: var(--spacing-xl);
   }
 
-  .logo {
-    font-size: clamp(2.5rem, 10vw, 4rem);
-    font-weight: var(--font-weight-bold);
-    letter-spacing: -0.03em;
-    text-transform: uppercase;
-    margin: 0;
-    line-height: 1;
+  .logo-badge {
+    display: inline-block;
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-semibold);
+    letter-spacing: var(--letter-spacing-wider);
+    color: var(--color-accent);
+    background: var(--color-accent-muted);
+    padding: var(--spacing-xs) var(--spacing-md);
+    border-radius: var(--radius-full);
+    margin-bottom: var(--spacing-lg);
+    border: 1px solid rgba(196, 255, 59, 0.2);
   }
 
-  .logo span {
+  .logo {
+    font-size: clamp(3rem, 12vw, 6rem);
+    font-weight: var(--font-weight-extrabold);
+    letter-spacing: var(--letter-spacing-tight);
+    text-transform: uppercase;
+    margin: 0;
+    line-height: 0.9;
+    display: flex;
+    justify-content: center;
+    gap: 0.1em;
+  }
+
+  .logo-main {
+    color: var(--color-foreground);
+  }
+
+  .logo-accent {
+    color: var(--color-accent);
     font-weight: var(--font-weight-light);
   }
 
+  /* Tagline */
   .tagline {
     font-size: var(--font-size-xl);
     color: var(--color-foreground-muted);
     margin-bottom: var(--spacing-2xl);
-    line-height: 1.4;
+    line-height: var(--line-height-relaxed);
   }
 
-  .tagline strong {
+  .tagline-highlight {
     color: var(--color-foreground);
+    font-weight: var(--font-weight-semibold);
+    position: relative;
   }
 
+  .tagline-highlight::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: -2px;
+    height: 2px;
+    background: var(--gradient-accent);
+    border-radius: 2px;
+  }
+
+  /* CTA Buttons */
   .cta-buttons {
     display: flex;
     gap: var(--spacing-md);
@@ -111,12 +241,24 @@ import { SignedIn, SignedOut } from '@clerk/astro/components';
     margin-bottom: var(--spacing-3xl);
   }
 
+  .btn-icon {
+    margin-left: var(--spacing-sm);
+    transition: transform var(--transition-fast);
+  }
+
+  .cta-buttons a:hover .btn-icon {
+    transform: translateX(4px);
+  }
+
+  /* Features */
   .features {
     display: flex;
     justify-content: center;
     gap: var(--spacing-2xl);
-    padding-top: var(--spacing-2xl);
-    border-top: var(--border-width) solid var(--color-border);
+    padding: var(--spacing-xl) 0;
+    border-top: 1px solid var(--color-border);
+    border-bottom: 1px solid var(--color-border);
+    margin-bottom: var(--spacing-2xl);
   }
 
   .feature {
@@ -127,16 +269,67 @@ import { SignedIn, SignedOut } from '@clerk/astro/components';
   }
 
   .feature-icon {
-    font-size: var(--font-size-2xl);
+    width: 48px;
+    height: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--color-accent-muted);
+    border: 1px solid rgba(196, 255, 59, 0.2);
+    border-radius: var(--radius-lg);
+    color: var(--color-accent);
+    transition: all var(--transition-fast);
+  }
+
+  .feature:hover .feature-icon {
+    background: var(--color-accent);
+    color: var(--color-black);
+    transform: translateY(-4px);
+    box-shadow: 0 8px 20px var(--color-accent-glow);
   }
 
   .feature-text {
     font-size: var(--font-size-sm);
     color: var(--color-foreground-muted);
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
+    font-weight: var(--font-weight-medium);
   }
 
+  /* Stats */
+  .stats {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--spacing-xl);
+  }
+
+  .stat {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+  }
+
+  .stat-value {
+    font-size: var(--font-size-2xl);
+    font-weight: var(--font-weight-bold);
+    color: var(--color-foreground);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .stat-label {
+    font-size: var(--font-size-xs);
+    color: var(--color-foreground-muted);
+    text-transform: uppercase;
+    letter-spacing: var(--letter-spacing-wide);
+  }
+
+  .stat-divider {
+    width: 1px;
+    height: 40px;
+    background: var(--color-border);
+  }
+
+  /* Footer */
   .home-footer {
     position: absolute;
     bottom: var(--spacing-lg);
@@ -144,10 +337,11 @@ import { SignedIn, SignedOut } from '@clerk/astro/components';
 
   .home-footer p {
     font-size: var(--font-size-sm);
-    color: var(--color-foreground-muted);
+    color: var(--color-foreground-subtle);
     margin: 0;
   }
 
+  /* Responsive */
   @media (max-width: 768px) {
     .cta-buttons {
       flex-direction: column;
@@ -158,6 +352,15 @@ import { SignedIn, SignedOut } from '@clerk/astro/components';
       flex-direction: column;
       gap: var(--spacing-lg);
     }
+
+    .stats {
+      flex-direction: column;
+      gap: var(--spacing-lg);
+    }
+
+    .stat-divider {
+      width: 40px;
+      height: 1px;
+    }
   }
 </style>
-

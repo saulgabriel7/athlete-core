@@ -1,0 +1,11 @@
+/* ============================================================================
+   ATHLETE CORE - Design Tokens Index
+   ============================================================================
+   Central import file for all design tokens
+   ============================================================================ */
+
+@import './colors.css';
+@import './typography.css';
+@import './spacing.css';
+@import './effects.css';
+@import './layout.css';
