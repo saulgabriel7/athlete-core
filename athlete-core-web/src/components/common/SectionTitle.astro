@@ -1,7 +1,7 @@
 ---
 /**
  * ATHLETE CORE - Section Title Component
- * Título de seção com subtítulo opcional
+ * Título de seção com design premium
  */
 
 interface Props {
@@ -29,16 +29,17 @@ const {
 
   .section-title h2 {
     font-size: var(--font-size-xl);
-    font-weight: 600;
-    letter-spacing: -0.02em;
+    font-weight: var(--font-weight-semibold);
+    letter-spacing: var(--letter-spacing-tight);
     color: var(--color-foreground);
     margin: 0 0 4px 0;
+    line-height: var(--line-height-tight);
   }
 
   .section-title p {
     font-size: var(--font-size-sm);
     color: var(--color-foreground-muted);
     margin: 0;
-    line-height: 1.5;
+    line-height: var(--line-height-normal);
   }
 </style>

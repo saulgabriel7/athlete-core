@@ -1,17 +1,17 @@
 ---
 /**
  * ATHLETE CORE - Perfil Page
- * Página de perfil do usuário
+ * Página de perfil com design premium
  */
 
 import DashboardLayout from '../../layouts/DashboardLayout.astro';
 import UserInfo from '../../modules/usuario/UserInfo.astro';
+import Card from '../../components/common/Card.astro';
+import Button from '../../components/common/Button.astro';
+import SectionTitle from '../../components/common/SectionTitle.astro';
 import { getCurrentUser, getUserId } from '../../services/clerkServer';
 import { getUser } from '../../services/mcpClient';
 import type { User } from '../../types/user';
-
-import Button from '../../components/common/Button.astro';
-import SectionTitle from '../../components/common/SectionTitle.astro';
 
 // Obtém dados do Clerk
 const clerkUser = await getCurrentUser(Astro.locals);
@@ -32,8 +32,13 @@ if (userId) {
 ---
 
 <DashboardLayout title="Perfil" pageTitle="Meu Perfil">
-  <div class="header-actions">
-    <Button href="/perfil/editar" variant="outline">Editar Dados</Button>
+  <div class="page-header">
+    <Button href="/perfil/editar" variant="outline">
+      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/>
+      </svg>
+      Editar Perfil
+    </Button>
   </div>
 
   <UserInfo 
@@ -42,39 +47,74 @@ if (userId) {
   />
 
   {!mcpUser && (
-    <div class="setup-notice">
-      <h3>Complete seu perfil</h3>
-      <p>
-        Para ter acesso a todas as funcionalidades, configure seus dados físicos
-        e objetivos no sistema MCP.
-      </p>
-    </div>
+    <Card class="setup-notice">
+      <div class="notice-icon">👋</div>
+      <div class="notice-content">
+        <h3>Complete seu perfil</h3>
+        <p>
+          Para ter acesso a todas as funcionalidades como treinos personalizados e planos alimentares,
+          configure seus dados físicos e objetivos.
+        </p>
+        <Button href="/perfil/editar" variant="primary" size="sm">
+          Configurar Agora
+        </Button>
+      </div>
+    </Card>
   )}
 </DashboardLayout>
 
 <style>
+  .page-header {
+    display: flex;
+    justify-content: flex-end;
+    margin-bottom: var(--spacing-lg);
+  }
+
   .setup-notice {
     margin-top: var(--spacing-xl);
-    padding: var(--spacing-xl);
-    background: var(--color-gray-light);
-    border: var(--border-width) solid var(--color-border);
+    display: flex;
+    gap: var(--spacing-lg);
+    align-items: flex-start;
+    background: linear-gradient(135deg, rgba(59, 130, 246, 0.1) 0%, rgba(59, 130, 246, 0.05) 100%);
+    border-color: rgba(59, 130, 246, 0.2);
+    animation: fadeInUp var(--transition-base) ease-out;
     max-width: 800px;
   }
 
-  .setup-notice h3 {
+  .setup-notice:hover {
+    border-color: rgba(59, 130, 246, 0.4);
+  }
+
+  .notice-icon {
+    font-size: var(--font-size-3xl);
+    flex-shrink: 0;
+  }
+
+  .notice-content {
+    flex: 1;
+  }
+
+  .notice-content h3 {
     font-size: var(--font-size-lg);
+    font-weight: var(--font-weight-semibold);
     margin: 0 0 var(--spacing-sm) 0;
+    color: var(--color-foreground);
   }
 
-  .setup-notice p {
-    margin: 0;
+  .notice-content p {
     color: var(--color-foreground-muted);
+    margin: 0 0 var(--spacing-md) 0;
+    line-height: var(--line-height-relaxed);
   }
 
-  .header-actions {
-    display: flex;
-    justify-content: flex-end;
-    margin-bottom: var(--spacing-md);
+  @keyframes fadeInUp {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
   }
 </style>
-

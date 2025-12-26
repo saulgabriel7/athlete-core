@@ -1,7 +1,7 @@
 ---
 /**
  * ATHLETE CORE - User Avatar Component
- * Avatar do usuário com imagem do Clerk
+ * Avatar do usuário com design premium
  */
 
 import { getInitials } from '../../utils/formatters';
@@ -20,16 +20,9 @@ const {
   class: className = '',
 } = Astro.props;
 
-const sizeClasses: Record<string, string> = {
-  sm: '',
-  md: '',
-  lg: 'avatar-lg',
-  xl: 'avatar-xl',
-};
-
 const classes = [
   'avatar',
-  sizeClasses[size],
+  `avatar-${size}`,
   className,
 ].filter(Boolean).join(' ');
 
@@ -37,10 +30,102 @@ const initials = getInitials(name);
 ---
 
 <div class={classes}>
-  {src ? (
-    <img src={src} alt={name || 'Avatar'} />
-  ) : (
-    <span class="avatar-placeholder">{initials}</span>
-  )}
+  <div class="avatar-glow"></div>
+  <div class="avatar-inner">
+    {src ? (
+      <img src={src} alt={name || 'Avatar'} />
+    ) : (
+      <span class="avatar-placeholder">{initials}</span>
+    )}
+  </div>
 </div>
 
+<style>
+  .avatar {
+    position: relative;
+    border-radius: var(--radius-full);
+  }
+
+  .avatar-glow {
+    position: absolute;
+    inset: -3px;
+    border-radius: inherit;
+    background: linear-gradient(135deg, var(--color-accent) 0%, var(--color-secondary) 100%);
+    opacity: 0;
+    transition: opacity var(--transition-fast);
+    z-index: 0;
+  }
+
+  .avatar:hover .avatar-glow {
+    opacity: 0.5;
+  }
+
+  .avatar-inner {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    border-radius: inherit;
+    overflow: hidden;
+    background: var(--color-background-elevated);
+    border: 2px solid var(--color-border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: border-color var(--transition-fast);
+    z-index: 1;
+  }
+
+  .avatar:hover .avatar-inner {
+    border-color: var(--color-border-hover);
+  }
+
+  .avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .avatar-placeholder {
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-foreground-muted);
+    text-transform: uppercase;
+    letter-spacing: var(--letter-spacing-wide);
+  }
+
+  /* Sizes */
+  .avatar-sm {
+    width: 32px;
+    height: 32px;
+  }
+
+  .avatar-sm .avatar-placeholder {
+    font-size: var(--font-size-xs);
+  }
+
+  .avatar-md {
+    width: 40px;
+    height: 40px;
+  }
+
+  .avatar-md .avatar-placeholder {
+    font-size: var(--font-size-sm);
+  }
+
+  .avatar-lg {
+    width: 64px;
+    height: 64px;
+  }
+
+  .avatar-lg .avatar-placeholder {
+    font-size: var(--font-size-lg);
+  }
+
+  .avatar-xl {
+    width: 96px;
+    height: 96px;
+  }
+
+  .avatar-xl .avatar-placeholder {
+    font-size: var(--font-size-2xl);
+  }
+</style>

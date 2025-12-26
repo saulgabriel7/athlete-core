@@ -1,8 +1,10 @@
 ---
 /**
  * ATHLETE CORE - Base Layout
- * Layout base com estilos globais
+ * Layout base com PWA support
  */
+
+import '../styles/globals.css';
 
 interface Props {
   title?: string;
@@ -21,19 +23,105 @@ const fullTitle = title === 'ATHLETE CORE' ? title : `${title} | ATHLETE CORE`;
 <html lang="pt-BR">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
     <meta name="description" content={description} />
+    
+    <!-- PWA Meta Tags -->
+    <meta name="theme-color" content="#0a0a0b" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="AthleteCore" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="application-name" content="ATHLETE CORE" />
+    <meta name="msapplication-TileColor" content="#0a0a0b" />
+    <meta name="msapplication-tap-highlight" content="no" />
+    
+    <!-- Manifest -->
+    <link rel="manifest" href="/manifest.json" />
+    
+    <!-- Favicon -->
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="apple-touch-icon" href="/icons/icon.svg" />
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+    
     <title>{fullTitle}</title>
   </head>
   <body>
     <slot />
+    
+    <!-- Service Worker Registration -->
+    <script is:inline>
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+          navigator.serviceWorker.register('/sw.js')
+            .then((registration) => {
+              console.log('SW registered:', registration.scope);
+            })
+            .catch((error) => {
+              console.log('SW registration failed:', error);
+            });
+        });
+      }
+
+      // iOS Install Prompt
+      let deferredPrompt;
+      window.addEventListener('beforeinstallprompt', (e) => {
+        e.preventDefault();
+        deferredPrompt = e;
+        
+        // Mostra um banner customizado ou botão de instalação
+        const installBanner = document.getElementById('install-banner');
+        if (installBanner) {
+          installBanner.style.display = 'flex';
+        }
+      });
+
+      // Detecta se está rodando como PWA
+      if (window.matchMedia('(display-mode: standalone)').matches) {
+        document.documentElement.classList.add('pwa-mode');
+      }
+    </script>
   </body>
 </html>
 
 <style is:global>
-  @import '../styles/globals.css';
-  @import '../styles/layout.css';
-  @import '../styles/components.css';
-</style>
+  /* PWA Safe Area Insets (para iPhones com notch) */
+  :root {
+    --safe-area-inset-top: env(safe-area-inset-top, 0px);
+    --safe-area-inset-bottom: env(safe-area-inset-bottom, 0px);
+    --safe-area-inset-left: env(safe-area-inset-left, 0px);
+    --safe-area-inset-right: env(safe-area-inset-right, 0px);
+  }
 
+  /* Quando rodando como PWA */
+  .pwa-mode body {
+    padding-top: var(--safe-area-inset-top);
+    padding-bottom: var(--safe-area-inset-bottom);
+  }
+
+  /* Previne scroll bounce no iOS */
+  html {
+    overscroll-behavior: none;
+  }
+
+  /* Desabilita seleção de texto em elementos interativos */
+  button, a {
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    user-select: none;
+  }
+
+  /* Melhora toque em mobile */
+  button, a, input, select, textarea {
+    touch-action: manipulation;
+  }
+
+  /* Remove highlight azul em Android */
+  * {
+    -webkit-tap-highlight-color: transparent;
+  }
+</style>

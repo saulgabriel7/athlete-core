@@ -1,0 +1,113 @@
+/* ============================================================================
+   ATHLETE CORE - Color Tokens
+   ============================================================================
+   Primitive colors and semantic color assignments
+   ============================================================================ */
+
+:root {
+  /* ========================================
+     PRIMITIVE COLORS
+     ======================================== */
+  
+  /* Neutrals */
+  --primitive-black: #000000;
+  --primitive-white: #ffffff;
+  --primitive-gray-50: #fafafa;
+  --primitive-gray-100: #f4f4f5;
+  --primitive-gray-200: #e4e4e7;
+  --primitive-gray-300: #d4d4d8;
+  --primitive-gray-400: #a1a1aa;
+  --primitive-gray-500: #71717a;
+  --primitive-gray-600: #52525b;
+  --primitive-gray-700: #3f3f46;
+  --primitive-gray-800: #27272a;
+  --primitive-gray-850: #1f1f23;
+  --primitive-gray-900: #18181b;
+  --primitive-gray-950: #121214;
+  --primitive-gray-1000: #0a0a0b;
+  
+  /* Lime (Brand Accent) */
+  --primitive-lime-300: #8fff3b;
+  --primitive-lime-400: #c4ff3b;
+  --primitive-lime-500: #d4ff6b;
+  
+  /* Blue */
+  --primitive-blue-400: #60a5fa;
+  --primitive-blue-500: #3b82f6;
+  --primitive-blue-600: #2563eb;
+  
+  /* Green */
+  --primitive-green-400: #4ade80;
+  --primitive-green-500: #22c55e;
+  --primitive-green-600: #16a34a;
+  
+  /* Yellow */
+  --primitive-yellow-400: #facc15;
+  --primitive-yellow-500: #eab308;
+  --primitive-yellow-600: #ca8a04;
+  
+  /* Orange */
+  --primitive-orange-400: #fb923c;
+  --primitive-orange-500: #f59e0b;
+  --primitive-orange-600: #d97706;
+  
+  /* Red */
+  --primitive-red-400: #f87171;
+  --primitive-red-500: #ef4444;
+  --primitive-red-600: #dc2626;
+
+  /* ========================================
+     SEMANTIC COLORS
+     ======================================== */
+  
+  /* Background Colors - Rich Blacks */
+  --color-background: var(--primitive-gray-1000);
+  --color-background-subtle: var(--primitive-gray-950);
+  --color-background-elevated: var(--primitive-gray-900);
+  --color-background-card: rgba(24, 24, 27, 0.8);
+  
+  /* Foreground Colors */
+  --color-foreground: var(--primitive-gray-50);
+  --color-foreground-muted: var(--primitive-gray-400);
+  --color-foreground-subtle: var(--primitive-gray-500);
+  
+  /* Brand Accent - Electric Lime */
+  --color-accent: var(--primitive-lime-400);
+  --color-accent-hover: var(--primitive-lime-500);
+  --color-accent-muted: rgba(196, 255, 59, 0.15);
+  --color-accent-glow: rgba(196, 255, 59, 0.3);
+  
+  /* Secondary Accent - Cool Blue */
+  --color-secondary: var(--primitive-blue-500);
+  --color-secondary-muted: rgba(59, 130, 246, 0.15);
+  
+  /* Border Colors */
+  --color-border: rgba(255, 255, 255, 0.08);
+  --color-border-hover: rgba(255, 255, 255, 0.15);
+  --color-border-active: rgba(196, 255, 59, 0.3);
+  --color-border-light: rgba(255, 255, 255, 0.05);
+  
+  /* Semantic Colors */
+  --color-success: var(--primitive-green-500);
+  --color-warning: var(--primitive-orange-500);
+  --color-error: var(--primitive-red-500);
+  --color-info: var(--primitive-blue-500);
+  
+  /* Legacy Support */
+  --color-white: var(--primitive-white);
+  --color-black: var(--primitive-black);
+  --color-primary: var(--color-accent);
+  --color-primary-foreground: var(--primitive-gray-1000);
+  --color-gray-light: rgba(255, 255, 255, 0.05);
+  --color-gray-medium: var(--primitive-gray-500);
+
+  /* ========================================
+     GRADIENTS
+     ======================================== */
+  --gradient-dark: linear-gradient(180deg, var(--primitive-gray-1000) 0%, var(--primitive-gray-950) 100%);
+  --gradient-card: linear-gradient(135deg, rgba(24, 24, 27, 0.9) 0%, rgba(18, 18, 20, 0.9) 100%);
+  --gradient-accent: linear-gradient(135deg, var(--color-accent) 0%, var(--primitive-lime-300) 100%);
+  --gradient-glow: radial-gradient(ellipse at center, var(--color-accent-muted) 0%, transparent 70%);
+  --gradient-hero: radial-gradient(ellipse 80% 50% at 50% -20%, rgba(196, 255, 59, 0.15) 0%, transparent 70%);
+  --gradient-sidebar: linear-gradient(180deg, rgba(196, 255, 59, 0.02) 0%, transparent 100%);
+}

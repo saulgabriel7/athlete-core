@@ -1,7 +1,7 @@
 ---
 /**
  * ATHLETE CORE - Treinos Page
- * Lista de planos de treino
+ * Lista de planos de treino com design premium
  */
 
 import DashboardLayout from '../../layouts/DashboardLayout.astro';
@@ -33,6 +33,8 @@ if (userId) {
 <DashboardLayout title="Treinos" pageTitle="Meus Treinos">
   {error ? (
     <div class="error-state">
+      <div class="error-icon">⚠️</div>
+      <h3>Ops! Algo deu errado</h3>
       <p>{error}</p>
       <p class="error-hint">
         Verifique se o servidor MCP está rodando em <code>http://localhost:3000</code>
@@ -46,7 +48,15 @@ if (userId) {
     >
       <div slot="actions" class="actions">
         <button id="generate-btn" class="btn-generate">
-          Gerar Novo Plano
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 8V4H8"/>
+            <rect width="16" height="12" x="4" y="8" rx="2"/>
+            <path d="M2 14h2"/>
+            <path d="M20 14h2"/>
+            <path d="M15 13v2"/>
+            <path d="M9 13v2"/>
+          </svg>
+          Gerar com IA
         </button>
       </div>
     </WorkoutList>
@@ -60,7 +70,13 @@ if (userId) {
     if (!confirm('Deseja gerar um novo plano de treino baseado no seu perfil?')) return;
 
     btn.disabled = true;
-    btn.textContent = 'Gerando...';
+    btn.innerHTML = `
+      <svg class="spinner" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <circle cx="12" cy="12" r="10" opacity="0.25"/>
+        <path d="M12 2a10 10 0 0 1 10 10"/>
+      </svg>
+      Gerando...
+    `;
 
     try {
       const res = await fetch('/api/workout/generate', {
@@ -80,7 +96,17 @@ if (userId) {
       alert('Erro de conexão');
     } finally {
       btn.disabled = false;
-      btn.textContent = 'Gerar Novo Plano';
+      btn.innerHTML = `
+        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 8V4H8"/>
+          <rect width="16" height="12" x="4" y="8" rx="2"/>
+          <path d="M2 14h2"/>
+          <path d="M20 14h2"/>
+          <path d="M15 13v2"/>
+          <path d="M9 13v2"/>
+        </svg>
+        Gerar com IA
+      `;
     }
   });
 </script>
@@ -93,47 +119,77 @@ if (userId) {
   }
 
   .btn-generate {
-    background: var(--color-foreground);
-    color: var(--color-background);
-    border: 1px solid var(--color-foreground);
-    padding: var(--spacing-sm) var(--spacing-md);
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    background: var(--color-accent);
+    color: var(--color-black);
+    border: 1px solid var(--color-accent);
+    padding: var(--spacing-sm) var(--spacing-lg);
     cursor: pointer;
     font-family: inherit;
     font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-semibold);
     text-transform: uppercase;
-    letter-spacing: 0.05em;
-    transition: all 0.2s;
+    letter-spacing: var(--letter-spacing-wide);
+    border-radius: var(--radius-lg);
+    transition: all var(--transition-fast);
   }
 
   .btn-generate:hover {
-    background: var(--color-background);
-    color: var(--color-foreground);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px var(--color-accent-glow);
   }
   
   .btn-generate:disabled {
-    opacity: 0.5;
+    opacity: 0.7;
     cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+  }
+
+  .btn-generate :global(.spinner) {
+    animation: spin 1s linear infinite;
+  }
+
+  @keyframes spin {
+    to { transform: rotate(360deg); }
   }
 
   .error-state {
     text-align: center;
     padding: var(--spacing-3xl);
-    background: var(--color-white);
-    border: var(--border-width) solid var(--color-border);
+    background: var(--glass-background);
+    border: 1px dashed var(--color-border);
+    border-radius: var(--radius-lg);
+  }
+
+  .error-icon {
+    font-size: var(--font-size-4xl);
+    margin-bottom: var(--spacing-md);
+  }
+
+  .error-state h3 {
+    font-size: var(--font-size-lg);
+    margin: 0 0 var(--spacing-sm) 0;
+    color: var(--color-foreground);
   }
 
   .error-state p {
     margin: 0 0 var(--spacing-md) 0;
+    color: var(--color-foreground-muted);
   }
 
   .error-hint {
     font-size: var(--font-size-sm);
-    color: var(--color-foreground-muted);
   }
 
   .error-hint code {
-    background: var(--color-gray-light);
-    padding: 2px 6px;
+    background: var(--color-background-elevated);
+    padding: 2px 8px;
+    border-radius: var(--radius-sm);
+    font-family: var(--font-mono);
+    font-size: var(--font-size-xs);
+    border: 1px solid var(--color-border);
   }
 </style>
-

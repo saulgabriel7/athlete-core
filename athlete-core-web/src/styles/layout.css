@@ -1,28 +1,50 @@
 /* ============================================================================
    ATHLETE CORE - Layout Styles
    ============================================================================
-   Estilos de layout e grid
+   Layout utilities, grid, flex, and responsive classes
    ============================================================================ */
 
-/* Main Layout */
+/* ============================================================================
+   PAGE LAYOUT
+   ============================================================================ */
+
 .page {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
+  background: var(--gradient-dark);
 }
 
 .page-content {
   flex: 1;
 }
 
-/* Dashboard Layout */
+/* ============================================================================
+   DASHBOARD LAYOUT
+   ============================================================================ */
+
 .dashboard-layout {
   display: flex;
   min-height: 100vh;
+  background: var(--gradient-dark);
+  position: relative;
+}
+
+/* Background Glow Effect */
+.dashboard-layout::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 60vh;
+  background: var(--gradient-hero);
+  pointer-events: none;
+  z-index: 0;
 }
 
 .dashboard-sidebar {
-  width: 280px;
+  width: var(--sidebar-width);
   flex-shrink: 0;
   border-right: var(--border-width) solid var(--color-border);
   background: var(--color-background);
@@ -30,6 +52,7 @@
   top: 0;
   height: 100vh;
   overflow-y: auto;
+  z-index: var(--z-sidebar);
 }
 
 .dashboard-main {
@@ -37,16 +60,20 @@
   display: flex;
   flex-direction: column;
   min-width: 0;
+  position: relative;
+  z-index: 1;
 }
 
 .dashboard-header {
-  height: 72px;
+  height: var(--header-height);
   border-bottom: var(--border-width) solid var(--color-border);
   display: flex;
   align-items: center;
   justify-content: space-between;
   padding: 0 var(--spacing-xl);
-  background: var(--color-background);
+  background: rgba(10, 10, 11, 0.8);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
   position: sticky;
   top: 0;
   z-index: var(--z-header);
@@ -55,15 +82,22 @@
 .dashboard-content {
   flex: 1;
   padding: var(--spacing-2xl);
-  background: var(--color-background-alt);
+  position: relative;
 }
 
-/* Container */
+/* ============================================================================
+   CONTAINER
+   ============================================================================ */
+
 .container {
   width: 100%;
   max-width: var(--container-xl);
   margin: 0 auto;
   padding: 0 var(--spacing-lg);
+}
+
+.container-xs {
+  max-width: var(--container-xs);
 }
 
 .container-sm {
@@ -78,7 +112,10 @@
   max-width: var(--container-lg);
 }
 
-/* Grid */
+/* ============================================================================
+   GRID
+   ============================================================================ */
+
 .grid {
   display: grid;
   gap: var(--spacing-lg);
@@ -100,7 +137,10 @@
   grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
 }
 
-/* Flex utilities */
+/* ============================================================================
+   FLEX UTILITIES
+   ============================================================================ */
+
 .flex {
   display: flex;
 }
@@ -111,6 +151,14 @@
 
 .flex-wrap {
   flex-wrap: wrap;
+}
+
+.flex-1 {
+  flex: 1;
+}
+
+.flex-none {
+  flex: none;
 }
 
 .items-center {
@@ -125,6 +173,10 @@
   align-items: flex-end;
 }
 
+.items-stretch {
+  align-items: stretch;
+}
+
 .justify-center {
   justify-content: center;
 }
@@ -135,6 +187,10 @@
 
 .justify-end {
   justify-content: flex-end;
+}
+
+.justify-start {
+  justify-content: flex-start;
 }
 
 .gap-xs {
@@ -157,38 +213,333 @@
   gap: var(--spacing-xl);
 }
 
-/* Spacing utilities */
-.mt-md { margin-top: var(--spacing-md); }
-.mt-lg { margin-top: var(--spacing-lg); }
-.mt-xl { margin-top: var(--spacing-xl); }
-.mt-2xl { margin-top: var(--spacing-2xl); }
+/* ============================================================================
+   SPACING UTILITIES
+   ============================================================================ */
 
-.mb-md { margin-bottom: var(--spacing-md); }
-.mb-lg { margin-bottom: var(--spacing-lg); }
-.mb-xl { margin-bottom: var(--spacing-xl); }
-.mb-2xl { margin-bottom: var(--spacing-2xl); }
+/* Margin */
+.m-0 {
+  margin: 0;
+}
 
-.py-md { padding-top: var(--spacing-md); padding-bottom: var(--spacing-md); }
-.py-lg { padding-top: var(--spacing-lg); padding-bottom: var(--spacing-lg); }
-.py-xl { padding-top: var(--spacing-xl); padding-bottom: var(--spacing-xl); }
-.py-2xl { padding-top: var(--spacing-2xl); padding-bottom: var(--spacing-2xl); }
-.py-3xl { padding-top: var(--spacing-3xl); padding-bottom: var(--spacing-3xl); }
+.m-auto {
+  margin: auto;
+}
 
-.px-md { padding-left: var(--spacing-md); padding-right: var(--spacing-md); }
-.px-lg { padding-left: var(--spacing-lg); padding-right: var(--spacing-lg); }
-.px-xl { padding-left: var(--spacing-xl); padding-right: var(--spacing-xl); }
+.mt-xs {
+  margin-top: var(--spacing-xs);
+}
 
-/* Responsive */
-@media (max-width: 1024px) {
+.mt-sm {
+  margin-top: var(--spacing-sm);
+}
+
+.mt-md {
+  margin-top: var(--spacing-md);
+}
+
+.mt-lg {
+  margin-top: var(--spacing-lg);
+}
+
+.mt-xl {
+  margin-top: var(--spacing-xl);
+}
+
+.mt-2xl {
+  margin-top: var(--spacing-2xl);
+}
+
+.mb-xs {
+  margin-bottom: var(--spacing-xs);
+}
+
+.mb-sm {
+  margin-bottom: var(--spacing-sm);
+}
+
+.mb-md {
+  margin-bottom: var(--spacing-md);
+}
+
+.mb-lg {
+  margin-bottom: var(--spacing-lg);
+}
+
+.mb-xl {
+  margin-bottom: var(--spacing-xl);
+}
+
+.mb-2xl {
+  margin-bottom: var(--spacing-2xl);
+}
+
+/* Padding */
+.p-0 {
+  padding: 0;
+}
+
+.py-xs {
+  padding-top: var(--spacing-xs);
+  padding-bottom: var(--spacing-xs);
+}
+
+.py-sm {
+  padding-top: var(--spacing-sm);
+  padding-bottom: var(--spacing-sm);
+}
+
+.py-md {
+  padding-top: var(--spacing-md);
+  padding-bottom: var(--spacing-md);
+}
+
+.py-lg {
+  padding-top: var(--spacing-lg);
+  padding-bottom: var(--spacing-lg);
+}
+
+.py-xl {
+  padding-top: var(--spacing-xl);
+  padding-bottom: var(--spacing-xl);
+}
+
+.py-2xl {
+  padding-top: var(--spacing-2xl);
+  padding-bottom: var(--spacing-2xl);
+}
+
+.py-3xl {
+  padding-top: var(--spacing-3xl);
+  padding-bottom: var(--spacing-3xl);
+}
+
+.px-xs {
+  padding-left: var(--spacing-xs);
+  padding-right: var(--spacing-xs);
+}
+
+.px-sm {
+  padding-left: var(--spacing-sm);
+  padding-right: var(--spacing-sm);
+}
+
+.px-md {
+  padding-left: var(--spacing-md);
+  padding-right: var(--spacing-md);
+}
+
+.px-lg {
+  padding-left: var(--spacing-lg);
+  padding-right: var(--spacing-lg);
+}
+
+.px-xl {
+  padding-left: var(--spacing-xl);
+  padding-right: var(--spacing-xl);
+}
+
+/* ============================================================================
+   TEXT UTILITIES
+   ============================================================================ */
+
+.text-center {
+  text-align: center;
+}
+
+.text-left {
+  text-align: left;
+}
+
+.text-right {
+  text-align: right;
+}
+
+.text-xs {
+  font-size: var(--font-size-xs);
+}
+
+.text-sm {
+  font-size: var(--font-size-sm);
+}
+
+.text-base {
+  font-size: var(--font-size-base);
+}
+
+.text-lg {
+  font-size: var(--font-size-lg);
+}
+
+.text-xl {
+  font-size: var(--font-size-xl);
+}
+
+.text-2xl {
+  font-size: var(--font-size-2xl);
+}
+
+.text-3xl {
+  font-size: var(--font-size-3xl);
+}
+
+.font-light {
+  font-weight: var(--font-weight-light);
+}
+
+.font-normal {
+  font-weight: var(--font-weight-normal);
+}
+
+.font-medium {
+  font-weight: var(--font-weight-medium);
+}
+
+.font-semibold {
+  font-weight: var(--font-weight-semibold);
+}
+
+.font-bold {
+  font-weight: var(--font-weight-bold);
+}
+
+.uppercase {
+  text-transform: uppercase;
+}
+
+.lowercase {
+  text-transform: lowercase;
+}
+
+.capitalize {
+  text-transform: capitalize;
+}
+
+.normal-case {
+  text-transform: none;
+}
+
+.tracking-tight {
+  letter-spacing: var(--letter-spacing-tight);
+}
+
+.tracking-normal {
+  letter-spacing: var(--letter-spacing-normal);
+}
+
+.tracking-wide {
+  letter-spacing: var(--letter-spacing-wide);
+}
+
+.tracking-wider {
+  letter-spacing: var(--letter-spacing-wider);
+}
+
+.truncate {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* ============================================================================
+   DISPLAY UTILITIES
+   ============================================================================ */
+
+.hidden {
+  display: none;
+}
+
+.block {
+  display: block;
+}
+
+.inline-block {
+  display: inline-block;
+}
+
+.inline {
+  display: inline;
+}
+
+/* ============================================================================
+   RESPONSIVE BREAKPOINTS
+   Mobile-first approach
+   ============================================================================ */
+
+/* Tablet (768px and up) */
+@media (min-width: 768px) {
+  .md\:hidden {
+    display: none;
+  }
+
+  .md\:block {
+    display: block;
+  }
+
+  .md\:flex {
+    display: flex;
+  }
+
+  .md\:grid-2 {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .md\:grid-3 {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+/* Laptop/Desktop (1024px and up) */
+@media (min-width: 1024px) {
+  .lg\:hidden {
+    display: none;
+  }
+
+  .lg\:block {
+    display: block;
+  }
+
+  .lg\:flex {
+    display: flex;
+  }
+
+  .lg\:grid-3 {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .lg\:grid-4 {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+/* Large screens (1280px and up) */
+@media (min-width: 1280px) {
+  .xl\:hidden {
+    display: none;
+  }
+
+  .xl\:block {
+    display: block;
+  }
+}
+
+/* ============================================================================
+   RESPONSIVE LAYOUT ADJUSTMENTS
+   ============================================================================ */
+
+/* Tablet (768px - 1023px) */
+@media (max-width: 1023px) {
   .dashboard-sidebar {
     position: fixed;
-    left: -280px;
-    transition: left var(--transition-base);
+    left: calc(var(--sidebar-width) * -1);
+    transition: left var(--transition-base), transform var(--transition-base);
     z-index: var(--z-sidebar);
+    box-shadow: var(--shadow-xl);
   }
 
   .dashboard-sidebar.open {
     left: 0;
+    transform: translateX(0);
   }
 
   .grid-3,
@@ -197,7 +548,8 @@
   }
 }
 
-@media (max-width: 768px) {
+/* Mobile (up to 767px) */
+@media (max-width: 767px) {
   .dashboard-content {
     padding: var(--spacing-lg);
   }
@@ -211,5 +563,19 @@
   .container {
     padding: 0 var(--spacing-md);
   }
+
+  .dashboard-header {
+    padding: 0 var(--spacing-md);
+  }
 }
 
+/* Small mobile (up to 479px) */
+@media (max-width: 479px) {
+  .dashboard-content {
+    padding: var(--spacing-md);
+  }
+
+  .container {
+    padding: 0 var(--spacing-sm);
+  }
+}

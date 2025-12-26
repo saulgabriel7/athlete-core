@@ -1,7 +1,7 @@
 ---
 /**
  * ATHLETE CORE - AI Chat Widget
- * Assistente de IA flutuante
+ * Assistente de IA flutuante com design premium
  */
 
 interface Props {
@@ -14,6 +14,7 @@ const { userId } = Astro.props;
 <div class="ai-chat-widget" id="ai-chat-widget">
   <!-- Botão flutuante -->
   <button class="chat-trigger" id="chat-trigger" aria-label="Abrir assistente">
+    <div class="trigger-glow"></div>
     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
       <path d="M12 8V4H8"/>
       <rect width="16" height="12" x="4" y="8" rx="2"/>
@@ -22,7 +23,7 @@ const { userId } = Astro.props;
       <path d="M15 13v2"/>
       <path d="M9 13v2"/>
     </svg>
-    <span class="trigger-label">AI</span>
+    <span class="trigger-badge">AI</span>
   </button>
 
   <!-- Janela do chat -->
@@ -39,9 +40,12 @@ const { userId } = Astro.props;
             <path d="M9 13v2"/>
           </svg>
         </div>
-        <div>
+        <div class="chat-header-text">
           <span class="chat-title">ATHLETE AI</span>
-          <span class="chat-status">Online</span>
+          <span class="chat-status">
+            <span class="status-dot"></span>
+            Online
+          </span>
         </div>
       </div>
       <button class="chat-close" id="chat-close" aria-label="Fechar">
@@ -53,6 +57,12 @@ const { userId } = Astro.props;
 
     <div class="chat-messages" id="chat-messages">
       <div class="message ai">
+        <div class="message-avatar">
+          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 8V4H8"/>
+            <rect width="16" height="12" x="4" y="8" rx="2"/>
+          </svg>
+        </div>
         <div class="message-content">
           Olá! 👋 Sou o assistente do <strong>ATHLETE CORE</strong>. 
           Posso te ajudar com treinos, nutrição e dicas de fitness. Como posso ajudar?
@@ -61,9 +71,15 @@ const { userId } = Astro.props;
     </div>
 
     <div class="chat-suggestions" id="chat-suggestions">
-      <button class="suggestion" data-message="Crie um treino de peito para hipertrofia">💪 Treino de peito</button>
-      <button class="suggestion" data-message="Sugira uma refeição pós-treino rica em proteína">🍗 Pós-treino</button>
-      <button class="suggestion" data-message="Dicas para melhorar meu desempenho">📈 Dicas</button>
+      <button class="suggestion" data-message="Crie um treino de peito para hipertrofia">
+        💪 Treino de peito
+      </button>
+      <button class="suggestion" data-message="Sugira uma refeição pós-treino rica em proteína">
+        🍗 Pós-treino
+      </button>
+      <button class="suggestion" data-message="Dicas para melhorar meu desempenho">
+        📈 Dicas
+      </button>
     </div>
 
     <form class="chat-input" id="chat-form">
@@ -106,6 +122,13 @@ const { userId } = Astro.props;
 
   trigger?.addEventListener('click', toggleChat);
   closeBtn?.addEventListener('click', toggleChat);
+
+  // Close on Escape
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && isOpen) {
+      toggleChat();
+    }
+  });
 
   // Sugestões
   suggestionsContainer?.querySelectorAll('.suggestion').forEach(btn => {
@@ -162,13 +185,23 @@ const { userId } = Astro.props;
   function addMessage(content, type) {
     const div = document.createElement('div');
     div.className = `message ${type}`;
-    div.innerHTML = `<div class="message-content">${formatMessage(content)}</div>`;
+    
+    let avatarHTML = '';
+    if (type.includes('ai')) {
+      avatarHTML = `<div class="message-avatar">
+        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 8V4H8"/>
+          <rect width="16" height="12" x="4" y="8" rx="2"/>
+        </svg>
+      </div>`;
+    }
+    
+    div.innerHTML = `${avatarHTML}<div class="message-content">${formatMessage(content)}</div>`;
     messagesContainer?.appendChild(div);
     messagesContainer?.scrollTo({ top: messagesContainer.scrollHeight, behavior: 'smooth' });
   }
 
   function formatMessage(text) {
-    // Converte markdown básico para HTML
     return text
       .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
       .replace(/\*(.*?)\*/g, '<em>$1</em>')
@@ -181,7 +214,19 @@ const { userId } = Astro.props;
     const div = document.createElement('div');
     div.id = id;
     div.className = 'message ai typing';
-    div.innerHTML = `<div class="message-content"><span class="dot"></span><span class="dot"></span><span class="dot"></span></div>`;
+    div.innerHTML = `
+      <div class="message-avatar">
+        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 8V4H8"/>
+          <rect width="16" height="12" x="4" y="8" rx="2"/>
+        </svg>
+      </div>
+      <div class="message-content">
+        <span class="dot"></span>
+        <span class="dot"></span>
+        <span class="dot"></span>
+      </div>
+    `;
     messagesContainer?.appendChild(div);
     messagesContainer?.scrollTo({ top: messagesContainer.scrollHeight, behavior: 'smooth' });
     return id;
@@ -203,30 +248,53 @@ const { userId } = Astro.props;
 
   /* Botão flutuante */
   .chat-trigger {
-    width: 56px;
-    height: 56px;
-    border-radius: 50%;
-    background: var(--color-foreground);
-    color: var(--color-background);
+    width: 60px;
+    height: 60px;
+    border-radius: var(--radius-full);
+    background: var(--color-accent);
+    color: var(--color-black);
     border: none;
     cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-    transition: transform 0.2s, box-shadow 0.2s;
+    position: relative;
+    transition: all var(--transition-fast);
+    box-shadow: 0 4px 20px var(--color-accent-glow);
+  }
+
+  .trigger-glow {
+    position: absolute;
+    inset: -4px;
+    border-radius: inherit;
+    background: var(--color-accent);
+    opacity: 0.3;
+    filter: blur(12px);
+    z-index: -1;
+    animation: glow-pulse 2s ease-in-out infinite;
+  }
+
+  @keyframes glow-pulse {
+    0%, 100% { opacity: 0.3; transform: scale(1); }
+    50% { opacity: 0.5; transform: scale(1.05); }
   }
 
   .chat-trigger:hover {
-    transform: scale(1.05);
-    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+    transform: scale(1.1);
+    box-shadow: 0 8px 30px var(--color-accent-glow);
   }
 
-  .trigger-label {
+  .trigger-badge {
     position: absolute;
-    font-size: 10px;
-    font-weight: 700;
-    bottom: 6px;
+    bottom: -2px;
+    right: -2px;
+    font-size: 9px;
+    font-weight: var(--font-weight-bold);
+    background: var(--color-black);
+    color: var(--color-accent);
+    padding: 2px 6px;
+    border-radius: var(--radius-sm);
+    letter-spacing: var(--letter-spacing-wide);
   }
 
   .ai-chat-widget.open .chat-trigger {
@@ -236,14 +304,26 @@ const { userId } = Astro.props;
   /* Janela do chat */
   .chat-window {
     display: none;
-    width: 380px;
-    height: 520px;
+    width: 400px;
+    height: 560px;
     background: var(--color-background);
     border: 1px solid var(--color-border);
-    border-radius: var(--radius-lg);
-    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+    border-radius: var(--radius-xl);
+    box-shadow: 0 16px 48px rgba(0, 0, 0, 0.4);
     flex-direction: column;
     overflow: hidden;
+    animation: slideUp var(--transition-base) ease-out;
+  }
+
+  @keyframes slideUp {
+    from {
+      opacity: 0;
+      transform: translateY(20px) scale(0.95);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
   }
 
   .ai-chat-widget.open .chat-window {
@@ -255,114 +335,164 @@ const { userId } = Astro.props;
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 12px 16px;
-    background: var(--color-foreground);
-    color: var(--color-background);
+    padding: var(--spacing-md) var(--spacing-lg);
+    background: var(--color-background-elevated);
+    border-bottom: 1px solid var(--color-border);
   }
 
   .chat-header-info {
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: var(--spacing-sm);
   }
 
   .chat-avatar {
-    width: 36px;
-    height: 36px;
-    background: rgba(255,255,255,0.1);
-    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    background: var(--color-accent-muted);
+    border: 1px solid rgba(196, 255, 59, 0.2);
+    border-radius: var(--radius-lg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--color-accent);
+  }
+
+  .chat-header-text {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .chat-title {
+    font-weight: var(--font-weight-semibold);
+    font-size: var(--font-size-sm);
+    color: var(--color-foreground);
+    letter-spacing: var(--letter-spacing-wide);
+  }
+
+  .chat-status {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 11px;
+    color: var(--color-success);
+  }
+
+  .status-dot {
+    width: 6px;
+    height: 6px;
+    background: var(--color-success);
+    border-radius: var(--radius-full);
+    animation: pulse 2s infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.4; }
+  }
+
+  .chat-close {
+    background: var(--color-background);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    color: var(--color-foreground-muted);
+    cursor: pointer;
+    padding: var(--spacing-xs);
+    transition: all var(--transition-fast);
     display: flex;
     align-items: center;
     justify-content: center;
   }
 
-  .chat-title {
-    display: block;
-    font-weight: 600;
-    font-size: 14px;
-    letter-spacing: 0.02em;
-  }
-
-  .chat-status {
-    display: block;
-    font-size: 11px;
-    opacity: 0.7;
-  }
-
-  .chat-close {
-    background: none;
-    border: none;
-    color: inherit;
-    cursor: pointer;
-    padding: 4px;
-    opacity: 0.7;
-    transition: opacity 0.2s;
-  }
-
   .chat-close:hover {
-    opacity: 1;
+    background: var(--color-error);
+    border-color: var(--color-error);
+    color: white;
   }
 
   /* Messages */
   .chat-messages {
     flex: 1;
     overflow-y: auto;
-    padding: 16px;
+    padding: var(--spacing-md);
     display: flex;
     flex-direction: column;
-    gap: 12px;
-    background: var(--color-background-subtle);
+    gap: var(--spacing-md);
+    background: var(--color-background);
   }
 
   .message {
-    max-width: 85%;
+    display: flex;
+    gap: var(--spacing-sm);
+    max-width: 90%;
+    animation: fadeIn var(--transition-fast) ease-out;
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
   }
 
   .message.user {
     align-self: flex-end;
+    flex-direction: row-reverse;
   }
 
   .message.ai {
     align-self: flex-start;
   }
 
+  .message-avatar {
+    width: 28px;
+    height: 28px;
+    background: var(--color-accent-muted);
+    border-radius: var(--radius-md);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--color-accent);
+    flex-shrink: 0;
+  }
+
   .message-content {
-    padding: 10px 14px;
+    padding: var(--spacing-sm) var(--spacing-md);
     border-radius: var(--radius-lg);
-    font-size: 14px;
-    line-height: 1.5;
+    font-size: var(--font-size-sm);
+    line-height: var(--line-height-relaxed);
   }
 
   .message.user .message-content {
-    background: var(--color-foreground);
-    color: var(--color-background);
-    border-bottom-right-radius: 4px;
+    background: var(--color-accent);
+    color: var(--color-black);
+    border-bottom-right-radius: var(--radius-sm);
   }
 
   .message.ai .message-content {
-    background: var(--color-background);
+    background: var(--color-background-elevated);
     border: 1px solid var(--color-border);
-    border-bottom-left-radius: 4px;
+    color: var(--color-foreground);
+    border-bottom-left-radius: var(--radius-sm);
   }
 
   .message.error .message-content {
-    background: #fef2f2;
-    border-color: #fecaca;
-    color: #991b1b;
+    background: rgba(239, 68, 68, 0.1);
+    border-color: rgba(239, 68, 68, 0.3);
+    color: var(--color-error);
   }
 
   /* Typing indicator */
   .message.typing .message-content {
     display: flex;
     gap: 4px;
-    padding: 14px 18px;
+    padding: var(--spacing-md);
   }
 
   .dot {
     width: 8px;
     height: 8px;
-    background: var(--color-foreground-muted);
-    border-radius: 50%;
+    background: var(--color-accent);
+    border-radius: var(--radius-full);
     animation: bounce 1.4s infinite ease-in-out;
   }
 
@@ -372,14 +502,14 @@ const { userId } = Astro.props;
 
   @keyframes bounce {
     0%, 80%, 100% { transform: translateY(0); }
-    40% { transform: translateY(-6px); }
+    40% { transform: translateY(-8px); }
   }
 
   /* Suggestions */
   .chat-suggestions {
     display: flex;
-    gap: 8px;
-    padding: 8px 16px;
+    gap: var(--spacing-sm);
+    padding: var(--spacing-sm) var(--spacing-md);
     overflow-x: auto;
     background: var(--color-background);
     border-top: 1px solid var(--color-border);
@@ -387,61 +517,72 @@ const { userId } = Astro.props;
 
   .suggestion {
     flex-shrink: 0;
-    padding: 6px 12px;
-    font-size: 12px;
-    background: var(--color-background-subtle);
+    padding: var(--spacing-sm) var(--spacing-md);
+    font-size: var(--font-size-xs);
+    font-family: inherit;
+    background: var(--color-background-elevated);
     border: 1px solid var(--color-border);
-    border-radius: 20px;
+    border-radius: var(--radius-full);
     cursor: pointer;
-    transition: all 0.2s;
+    transition: all var(--transition-fast);
     white-space: nowrap;
+    color: var(--color-foreground-muted);
   }
 
   .suggestion:hover {
-    background: var(--color-foreground);
-    color: var(--color-background);
-    border-color: var(--color-foreground);
+    background: var(--color-accent);
+    color: var(--color-black);
+    border-color: var(--color-accent);
+    transform: translateY(-2px);
   }
 
   /* Input */
   .chat-input {
     display: flex;
-    gap: 8px;
-    padding: 12px 16px;
-    background: var(--color-background);
+    gap: var(--spacing-sm);
+    padding: var(--spacing-md);
+    background: var(--color-background-elevated);
     border-top: 1px solid var(--color-border);
   }
 
   .chat-input input {
     flex: 1;
-    padding: 10px 14px;
+    padding: var(--spacing-sm) var(--spacing-md);
     border: 1px solid var(--color-border);
-    border-radius: var(--radius-md);
-    font-size: 14px;
-    outline: none;
-    transition: border-color 0.2s;
+    border-radius: var(--radius-lg);
+    font-size: var(--font-size-sm);
+    background: var(--color-background);
+    color: var(--color-foreground);
+    transition: all var(--transition-fast);
   }
 
   .chat-input input:focus {
-    border-color: var(--color-foreground);
+    outline: none;
+    border-color: var(--color-accent);
+    box-shadow: 0 0 0 3px var(--color-accent-muted);
+  }
+
+  .chat-input input::placeholder {
+    color: var(--color-foreground-subtle);
   }
 
   .chat-input button[type="submit"] {
-    width: 40px;
-    height: 40px;
-    background: var(--color-foreground);
-    color: var(--color-background);
+    width: 44px;
+    height: 44px;
+    background: var(--color-accent);
+    color: var(--color-black);
     border: none;
-    border-radius: var(--radius-md);
+    border-radius: var(--radius-lg);
     cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
-    transition: opacity 0.2s;
+    transition: all var(--transition-fast);
   }
 
   .chat-input button[type="submit"]:hover {
-    opacity: 0.9;
+    transform: scale(1.05);
+    box-shadow: 0 4px 12px var(--color-accent-glow);
   }
 
   /* Mobile */
@@ -463,4 +604,3 @@ const { userId } = Astro.props;
     }
   }
 </style>
-
